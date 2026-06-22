@@ -12,7 +12,7 @@ import {
   orderBy,
   limit,
 } from 'firebase/firestore';
-import { db } from './Config'; // Ajusta si tu config tiene otro nombre
+import { db } from './config'; // Ajusta si tu config tiene otro nombre
 
 /**
  * Obtiene todos los documentos de una colección, soportando filtros de los nuevos servicios.
