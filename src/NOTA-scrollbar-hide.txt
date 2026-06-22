@@ -1,0 +1,27 @@
+NOTA TÉCNICA — clase `scrollbar-hide` en SedeFilterPills.jsx
+================================================================
+
+`scrollbar-hide` NO es una clase nativa de Tailwind. La usé para que la
+barra de pills en móvil haga scroll horizontal sin mostrar la barra de
+scroll del navegador (más limpio visualmente). Tienes dos opciones:
+
+OPCIÓN 1 (recomendada, una línea):
+  npm install -D tailwind-scrollbar-hide
+
+  Y en tailwind.config.js, dentro de `plugins: []`:
+  plugins: [
+    require('tailwind-scrollbar-hide'),
+  ],
+
+OPCIÓN 2 (sin dependencia nueva):
+  Agrega esto a tu src/index.css:
+
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+Si no haces ninguna de las dos, el código funciona igual — simplemente
+verás la barra de scroll nativa del navegador en el contenedor de pills
+en móvil. No rompe nada, es puramente estético.
