@@ -2,8 +2,11 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-
-    <link rel="icon" type="image/png" href="/logo2.png" />
+    
+    <!-- Íconos optimizados para navegadores, móviles y Google Search -->
+    <link rel="icon" type="image/png" href="/logo2.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/logo2.png" />
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Verificación de Google Search Console -->
@@ -26,6 +29,16 @@
     <meta name="twitter:description" content="Únete a nuestra red de voluntarios y transforma realidades en Piura, Cusco, Lima e Iquitos." />
     <meta name="twitter:image" content="https://munay-peru.vercel.app/og-image.jpg" />
 
+    <!-- Datos estructurados para forzar a Google a usar tu nombre real -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Munay Perú",
+      "alternateName": "Organización Munay",
+      "url": "https://munay-peru.vercel.app/"
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
