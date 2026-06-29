@@ -20,7 +20,7 @@ import { fetchUserProfile } from './features/auth/services/authService';
 // debe iniciarse una sola vez por carga de la app, nunca re-suscribirse
 // por un re-render de algún componente.
 onAuthStateChanged(auth, async (firebaseUser) => {
-  const { setFirebaseUser, setUserProfile, setLoading, clearAuth } = useAuthStore.getState();
+  const { setFirebaseUser, setUserProfile, setProfileLoading, setLoading, clearAuth } = useAuthStore.getState();
 
   if (!firebaseUser) {
     clearAuth();
@@ -28,13 +28,14 @@ onAuthStateChanged(auth, async (firebaseUser) => {
   }
 
   setFirebaseUser(firebaseUser);
+  setProfileLoading(); // ← nueva línea: marca explícitamente "buscando perfil"
 
   try {
     const profile = await fetchUserProfile(firebaseUser.uid);
-    setUserProfile(profile);
+    setUserProfile(profile); // ya decide 'found' o 'not_found' internamente
   } catch (error) {
     console.error('[main.jsx] Error al obtener el perfil de usuario:', error);
-    setUserProfile(null);
+    setUserProfile(null); // esto también marcará 'not_found', lo cual es razonable: si falló el fetch, tratamos como "no autorizado" en vez de loading infinito
   } finally {
     setLoading(false);
   }
