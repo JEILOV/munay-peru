@@ -27,6 +27,7 @@ export default function UnauthorizedScreen() {
       <p className="text-gray-500 max-w-md mb-6">
         Tu cuenta inició sesión correctamente, pero no tiene un perfil
         asociado en el sistema. Contacta a un administrador para que
+        
         configure tu acceso.
       </p>
       <button
