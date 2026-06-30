@@ -11,6 +11,7 @@ import quienesSomosImg from '../../assets/quienes-somos.jpg';
 import eduImg from '../../assets/edu.jpg';
 import ecoImg from '../../assets/eco.jpg';
 import ddhhImg from '../../assets/ddhh.jpg';
+import TestimonialsSection from '../../features/testimonials/components/TestimonialsSection'; // <-- 1. IMPORTAR AQUÍ
 
 // ---------- datos estáticos institucionales ----------
 
@@ -201,6 +202,9 @@ export default function AboutPage() {
           </div>
         )}
       </section>
+
+      {/* ── TESTIMONIOS ── */}
+      <TestimonialsSection /> {/* <-- 2. COLOCO AQUÍ EL COMPONENTE */}
 
     </div>
   );

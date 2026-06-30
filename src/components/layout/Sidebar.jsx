@@ -4,10 +4,11 @@ import clsx from 'clsx';
 import logoMunay from '../../assets/logo-munay.png'; // ← Logo importado
 
 const NAV_ITEMS = [
-  { to: '/admin',             label: 'Dashboard',            icon: DashboardIcon, end: true },
+  { to: '/admin',             label: 'Dashboard',             icon: DashboardIcon, end: true },
   { to: '/admin/sedes',       label: 'Gestión de Sedes',     icon: SedesIcon                },
   { to: '/admin/proyectos',   label: 'Gestión de Proyectos', icon: ProjectsIcon             },
-  { to: '/admin/equipo',      label: 'Gestión de Equipo',    icon: PeopleIcon               },
+  { to: '/admin/equipo',      label: 'Gestión de Equipo',     icon: PeopleIcon               },
+  { to: '/admin/testimonios', label: 'Testimonios',          icon: StarIcon                 }, // <-- NUEVA RUTA
   { to: '/admin/voluntarios', label: 'Bandeja de Entrada',   icon: InboxIcon                },
 ];
 
@@ -20,7 +21,7 @@ export default function Sidebar({ basePath = '/admin', onLogout }) {
   return (
     <aside className="w-64 shrink-0 bg-primary-900 text-warm-200 flex flex-col h-screen sticky top-0">
       
-  {/* ── Encabezado con Logo ── */}
+      {/* ── Encabezado con Logo ── */}
       <div className="px-6 pt-8 pb-6 border-b border-primary-800 flex flex-col items-center">
         <img 
           src={logoMunay} 
@@ -105,6 +106,14 @@ function PeopleIcon(props) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  );
+}
+
+function StarIcon(props) { // <-- NUEVO ÍCONO
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
     </svg>
   );
 }

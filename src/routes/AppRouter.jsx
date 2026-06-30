@@ -18,7 +18,6 @@ import AdminLayout from '../layouts/AdminLayout';
 import ProtectedRoute from './ProtectedRoute';
 
 // Páginas públicas
-
 import HomePage from '../pages/public/HomePage';
 import ProjectsPage from '../pages/public/ProjectsPage';
 import ProjectDetailPage from '../pages/public/ProjectDetailPage';
@@ -29,7 +28,6 @@ import AboutPage from '../pages/public/AboutPage';
 import ContactPage from '../pages/public/ContactPage';
 import NotFoundPage from '../pages/public/NotFoundPage';
 
-
 // Páginas admin
 import LoginPage from '../pages/admin/LoginPage';
 import DashboardPage from '../pages/admin/DashboardPage';
@@ -38,6 +36,7 @@ import ProjectEditorPage from '../pages/admin/ProjectEditorPage';
 import HeadquartersManagerPage from '../pages/admin/HeadquartersManagerPage';
 import VolunteersInboxPage from '../pages/admin/VolunteersInboxPage';
 import TeamManagerPage from '../pages/admin/TeamManagerPage';
+import TestimonialsManagerPage from '../pages/admin/TestimonialsManagerPage'; // <-- NUEVA IMPORTACIÓN
 
 export default function AppRouter() {
   return (
@@ -63,9 +62,7 @@ export default function AppRouter() {
         {/* ───────────── LOGIN (fuera del guard, sin AdminLayout) ───────────── */}
         <Route path="/admin/login" element={<LoginPage />} />
 
-       
-
-      {/* ───────────── CMS PROTEGIDO ───────────── */}
+        {/* ───────────── CMS PROTEGIDO ───────────── */}
         <Route element={<ProtectedRoute />}>
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<DashboardPage />} />
@@ -77,6 +74,9 @@ export default function AppRouter() {
             
             {/* Gestión de equipo */}
             <Route path="/admin/equipo" element={<TeamManagerPage />} />
+
+            {/* Gestión de testimonios */}
+            <Route path="/admin/testimonios" element={<TestimonialsManagerPage />} /> {/* <-- NUEVA RUTA */}
 
             {/* Gestión de sedes */}
             <Route path="/admin/sedes" element={<HeadquartersManagerPage />} />
@@ -93,4 +93,3 @@ export default function AppRouter() {
     </BrowserRouter>
   );
 }
-
