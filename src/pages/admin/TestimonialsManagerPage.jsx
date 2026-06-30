@@ -256,4 +256,3 @@ function UserIcon(props) {
   );
 }
 
-export default TestimonialsManagerPage;
