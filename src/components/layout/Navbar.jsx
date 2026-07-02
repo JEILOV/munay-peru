@@ -17,6 +17,7 @@ const NAV_LINKS = [
   { to: '/nosotros', label: 'Nosotros' },
   { to: '/proyectos', label: 'Proyectos' },
   { to: '/sedes', label: 'Sedes' },
+  { to: '/alianzas', label: 'Alianzas' },
 ];
 
 export default function Navbar() {
