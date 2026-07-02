@@ -1,8 +1,10 @@
 // src/pages/public/EventsPage.jsx
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+import Section from '../../components/layout/Section';
 import { fetchUpcomingEvents } from '../../features/projects/services/projectsService';
 
 /* ── Helper: Timestamp de Firestore → fecha legible en español ──────────── */
@@ -24,6 +26,18 @@ function formatEventDate(ts) {
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+/* ── Variants de stagger para la grilla de eventos ───────────────────────── */
+
+const gridVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15 } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+};
 
 /* ════════════════════════════════════════════════════════════════════════════
    COMPONENTE PRINCIPAL
@@ -51,15 +65,14 @@ export default function EventsPage() {
     <main className="min-h-screen bg-warm-50">
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <div className="relative bg-primary-900 overflow-hidden">
-        {/* Decoración geométrica de fondo */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute -top-10 -left-10 w-72 h-72 bg-warm-50 rounded-full" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-500 rounded-full" />
-          <div className="absolute -bottom-16 -right-10 w-96 h-96 bg-primary-600 rounded-full" />
-        </div>
+      <Section
+        variant="primary"
+        backgroundImage="https://i.pinimg.com/1200x/9b/bf/99/9bbf99beb59a442d35b524c7afbbd4c7.jpg" // Pega aquí tu URL de imgbb para el fondo del hero
+        containerClassName="relative text-center"
+      >
+     
 
-        <div className="relative container mx-auto max-w-5xl px-4 py-16 md:py-24 text-center">
+        <div className="relative max-w-3xl mx-auto">
           <span className="inline-block bg-accent-500/20 text-accent-300 text-xs font-semibold px-3 py-1 rounded-full mb-4 tracking-wide uppercase">
             Agenda Munay Perú
           </span>
@@ -90,10 +103,10 @@ export default function EventsPage() {
             ))}
           </div>
         </div>
-      </div>
+      </Section>
 
       {/* ── Contenido principal ───────────────────────────────────────────── */}
-      <div className="container mx-auto max-w-5xl px-4 py-14">
+      <Section variant="warm" containerClassName="max-w-5xl">
 
         {/* ── Estado: cargando ────────────────────────────────────────────── */}
         {loading && (
@@ -138,21 +151,29 @@ export default function EventsPage() {
           </div>
         )}
 
-        {/* ── Grid de eventos ───────────────────────────────────────────────── */}
+        {/* ── Grid de eventos con efecto cascada ─────────────────────────────── */}
         {!loading && !error && events.length > 0 && (
           <>
             <p className="text-sm text-warm-500 mb-6">
               {events.length} {events.length === 1 ? 'evento próximo' : 'eventos próximos'}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              variants={gridVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+            >
               {events.map((event) => (
-                <EventCard key={event.id} event={event} />
+                <motion.div key={event.id} variants={cardVariants}>
+                  <EventCard event={event} />
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </>
         )}
-      </div>
+      </Section>
     </main>
   );
 }

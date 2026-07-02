@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { submitVolunteerForm } from '../../features/volunteers/services/volunteerService';
+import Section from '../../components/layout/Section';
+import AnimatedCounter from '../../components/ui/AnimatedCounter';
 
 const SEDES_OPTIONS = ['Piura', 'Cusco', 'Lima', 'Iquitos'];
 const GENDER_OPTIONS = ['Femenino', 'Masculino', 'Prefiero no decir'];
@@ -53,62 +55,66 @@ const VolunteerPage = () => {
     <main className="min-h-screen bg-warm-50">
 
       {/* ── Hero ───────────────────────────────────────────────────────── */}
-      <div className="relative bg-primary-900 overflow-hidden">
-        {/* Decoración geométrica de fondo */}
-        <div className="absolute inset-0 opacity-10">
+      <Section
+        variant="primary"
+        backgroundImage="https://i.pinimg.com/1200x/d6/58/cb/d658cbeebd1fec3edd2437d785a98339.jpg " // Pega aquí tu URL de imgbb para el fondo del hero
+        containerClassName="relative flex flex-col md:flex-row items-center gap-10"
+      >
+        {/* Decoración geométrica de fondo — se mantiene como textura mientras no haya backgroundImage */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute -top-10 -left-10 w-72 h-72 bg-warm-50 rounded-full" />
           <div className="absolute -bottom-16 -right-10 w-96 h-96 bg-accent-500 rounded-full" />
         </div>
 
-        <div className="relative container mx-auto max-w-5xl px-4 py-16 md:py-20 flex flex-col md:flex-row items-center gap-10">
-          {/* Texto hero */}
-          <div className="flex-1 text-center md:text-left">
-            <span className="inline-block bg-accent-500/20 text-accent-300 text-xs font-semibold px-3 py-1 rounded-full mb-4 tracking-wide uppercase">
-              Únete a nuestra comunidad
-            </span>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-warm-50 leading-tight">
-              Sé el cambio que <br />
-              <span className="text-accent-400">el Perú necesita.</span>
-            </h1>
-            <p className="mt-4 text-warm-100 text-lg leading-relaxed max-w-md">
-              Como voluntario de Munay Perú, transformas vidas desde adentro.
-              Tu tiempo, talento y corazón son el motor de nuestra misión.
-            </p>
+        {/* Texto hero */}
+        <div className="relative flex-1 text-center md:text-left">
+          <span className="inline-block bg-accent-500/20 text-accent-300 text-xs font-semibold px-3 py-1 rounded-full mb-4 tracking-wide uppercase">
+            Únete a nuestra comunidad
+          </span>
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-warm-50 leading-tight">
+            Sé el cambio que <br />
+            <span className="text-accent-400">el Perú necesita.</span>
+          </h1>
+          <p className="mt-4 text-warm-100 text-lg leading-relaxed max-w-md">
+            Como voluntario de Munay Perú, transformas vidas desde adentro.
+            Tu tiempo, talento y corazón son el motor de nuestra misión.
+          </p>
 
-            {/* Tres íconos de beneficio */}
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              {[
-                { icon: <HeartIcon />,   text: 'Impacto real' },
-                { icon: <PeopleIcon />,  text: 'Comunidad' },
-                { icon: <GrowthIcon />,  text: 'Crecimiento personal' },
-              ].map(({ icon, text }) => (
-                <div key={text} className="flex items-center gap-2 text-sm text-warm-100">
-                  <span className="text-accent-400">{icon}</span>
-                  {text}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Stat cards */}
-          <div className="flex-shrink-0 grid grid-cols-2 gap-3 w-full max-w-xs">
+          {/* Tres íconos de beneficio */}
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
             {[
-              { value: '+200',  label: 'Voluntarios activos' },
-              { value: '4',     label: 'Sedes en el Perú'    },
-              { value: '+50',   label: 'Proyectos realizados' },
-              { value: '100%',  label: 'Corazón puesto'       },
-            ].map(({ value, label }) => (
-              <div key={label} className="bg-warm-50/10 backdrop-blur rounded-2xl p-4 text-center">
-                <p className="font-display text-2xl font-bold text-accent-400">{value}</p>
-                <p className="text-xs text-warm-200 mt-1 leading-tight">{label}</p>
+              { icon: <HeartIcon />,   text: 'Impacto real' },
+              { icon: <PeopleIcon />,  text: 'Comunidad' },
+              { icon: <GrowthIcon />,  text: 'Crecimiento personal' },
+            ].map(({ icon, text }) => (
+              <div key={text} className="flex items-center gap-2 text-sm text-warm-100">
+                <span className="text-accent-400">{icon}</span>
+                {text}
               </div>
             ))}
           </div>
         </div>
-      </div>
+
+       {/* Stat cards */}
+        <div className="relative flex-shrink-0 grid grid-cols-2 gap-3 w-full max-w-xs">
+          {[
+            { value: 200, prefix: '+', suffix: '', label: 'Voluntarios activos' },
+            { value: 4,   prefix: '',  suffix: '', label: 'Sedes en el Perú'    },
+            { value: 50,  prefix: '+', suffix: '', label: 'Proyectos realizados' },
+            { value: 100, prefix: '',  suffix: '%', label: 'Corazón puesto'       },
+          ].map(({ value, prefix, suffix, label }) => (
+            <div key={label} className="bg-warm-50/10 backdrop-blur rounded-2xl p-4 text-center">
+              <p className="font-display text-2xl font-bold text-accent-400">
+                <AnimatedCounter value={value} prefix={prefix} suffix={suffix} />
+              </p>
+              <p className="text-xs text-warm-200 mt-1 leading-tight">{label}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
 
       {/* ── Formulario ─────────────────────────────────────────────────── */}
-      <div className="container mx-auto max-w-3xl px-4 py-14">
+      <Section variant="warm" containerClassName="max-w-3xl">
         <div className="text-center mb-10">
           <h2 className="font-display text-2xl font-bold text-primary-900">Completa tu postulación</h2>
           <p className="text-warm-600 mt-2 text-sm">
@@ -232,7 +238,7 @@ const VolunteerPage = () => {
             </button>
           </form>
         )}
-      </div>
+      </Section>
     </main>
   );
 };

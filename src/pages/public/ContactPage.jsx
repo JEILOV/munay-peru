@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { submitContactForm } from '../../features/contact/services/contactService';
+import Section from '../../components/layout/Section';
 
 const INITIAL_FORM = { name: '', email: '', subject: '', message: '' };
 
@@ -30,119 +31,127 @@ const ContactPage = () => {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-warm-50">
 
-      {/* ── Hero strip ─────────────────────────────────────────────────── */}
-      <div className="bg-[#7A1F2D] py-14 px-4 text-center">
-        <h1 className="text-4xl font-bold text-white tracking-tight">Contáctanos</h1>
-        <p className="mt-2 text-red-200 text-lg">
+      {/* ── Hero ──────────────────────────────────────────────────────────── */}
+      <Section
+        variant="primary"
+        backgroundImage="https://i.pinimg.com/1200x/e6/22/62/e622624b689e3c604bb26604e4bf008a.jpg" // Pega aquí tu URL de imgbb para el fondo del hero
+        containerClassName="text-center"
+      >
+        <h1 className="font-display text-4xl md:text-5xl font-bold text-warm-50 tracking-tight">
+          Contáctanos
+        </h1>
+        <p className="mt-3 text-warm-200 text-lg">
           Estamos aquí para escucharte y crecer juntos.
         </p>
-      </div>
+      </Section>
 
-      {/* ── Cuerpo dos columnas ────────────────────────────────────────── */}
-      <div className="container mx-auto max-w-5xl px-4 py-14 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+      {/* ── Formulario ────────────────────────────────────────────────────── */}
+      <Section variant="warm">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start max-w-5xl mx-auto">
 
-        {/* ── Columna izquierda: info ──────────────────────────────────── */}
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4 leading-snug">
-            Tu voz importa,<br />
-            <span className="text-[#7A1F2D]">hablemos.</span>
-          </h2>
-          <p className="text-gray-500 leading-relaxed mb-8">
-            Si tienes preguntas sobre nuestros proyectos, deseas ser voluntario o
-            simplemente quieres conocer más sobre Munay Perú, escríbenos.
-            Respondemos a la brevedad.
-          </p>
+          {/* ── Columna izquierda: info ──────────────────────────────────── */}
+          <div>
+            <h2 className="font-display text-2xl font-bold text-primary-900 mb-4 leading-snug">
+              Tu voz importa,<br />
+              <span className="text-primary-700">hablemos.</span>
+            </h2>
+            <p className="text-warm-600 leading-relaxed mb-8">
+              Si tienes preguntas sobre nuestros proyectos, deseas ser voluntario o
+              simplemente quieres conocer más sobre Munay Perú, escríbenos.
+              Respondemos a la brevedad.
+            </p>
 
-     <ul className="space-y-5 text-sm">
-            <ContactInfo 
-              icon={<MailIcon />} 
-              label="Correo" 
-              value="munayperu02@gmail.com" 
-              href="mailto:munayperu02@gmail.com"
-            />
-            <ContactInfo 
-              icon={<PhoneIcon />} 
-              label="Teléfono (WhatsApp)" 
-              value="+51 939 389 478" 
-              href="https://wa.me/51939389478"
-            />
-            <ContactInfo 
-              icon={<LocationIcon />} 
-              label="Sede central" 
-              value="Lima, Perú" 
-            />
-          </ul>
-        </div>
-
-        {/* ── Columna derecha: formulario ──────────────────────────────── */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-
-          {success ? (
-            <SuccessBanner onReset={() => setSuccess(false)} />
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-              <Field
-                label="Nombre completo"
-                name="name"
-                type="text"
-                placeholder="María García"
-                value={form.name}
-                onChange={handleChange}
-                required
+            <ul className="space-y-5 text-sm">
+              <ContactInfo
+                icon={<MailIcon />}
+                label="Correo"
+                value="munayperu02@gmail.com"
+                href="mailto:munayperu02@gmail.com"
               />
-              <Field
-                label="Correo electrónico"
-                name="email"
-                type="email"
-                placeholder="maria@ejemplo.com"
-                value={form.email}
-                onChange={handleChange}
-                required
+              <ContactInfo
+                icon={<PhoneIcon />}
+                label="Teléfono (WhatsApp)"
+                value="+51 939 389 478"
+                href="https://wa.me/51939389478"
               />
-              <Field
-                label="Asunto"
-                name="subject"
-                type="text"
-                placeholder="¿Sobre qué quieres escribirnos?"
-                value={form.subject}
-                onChange={handleChange}
-                required
+              <ContactInfo
+                icon={<LocationIcon />}
+                label="Sede central"
+                value="Lima, Perú"
               />
+            </ul>
+          </div>
 
-              {/* Textarea: no usa <Field> para controlar las filas */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mensaje <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  name="message"
-                  rows={5}
-                  placeholder="Cuéntanos con detalle..."
-                  value={form.message}
+          {/* ── Columna derecha: formulario ──────────────────────────────── */}
+          <div className="bg-white rounded-2xl shadow-soft border border-warm-100 p-8">
+
+            {success ? (
+              <SuccessBanner onReset={() => setSuccess(false)} />
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                <Field
+                  label="Nombre completo"
+                  name="name"
+                  type="text"
+                  placeholder="María García"
+                  value={form.name}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7A1F2D]/30 focus:border-[#7A1F2D] transition resize-none"
                 />
-              </div>
+                <Field
+                  label="Correo electrónico"
+                  name="email"
+                  type="email"
+                  placeholder="maria@ejemplo.com"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
+                <Field
+                  label="Asunto"
+                  name="subject"
+                  type="text"
+                  placeholder="¿Sobre qué quieres escribirnos?"
+                  value={form.subject}
+                  onChange={handleChange}
+                  required
+                />
 
-              {error && (
-                <p className="text-sm text-red-500 bg-red-50 rounded-lg px-4 py-2">{error}</p>
-              )}
+                {/* Textarea: no usa <Field> para controlar las filas */}
+                <div>
+                  <label className="block text-sm font-medium text-primary-900 mb-1">
+                    Mensaje <span className="text-primary-500">*</span>
+                  </label>
+                  <textarea
+                    name="message"
+                    rows={5}
+                    placeholder="Cuéntanos con detalle..."
+                    value={form.message}
+                    onChange={handleChange}
+                    required
+                    className="w-full rounded-xl border border-warm-200 bg-warm-50 px-4 py-2.5 text-sm text-primary-900 placeholder-warm-400 focus:outline-none focus:ring-2 focus:ring-accent-500/30 focus:border-accent-500 transition resize-none"
+                  />
+                </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-[#7A1F2D] hover:bg-[#5e1722] text-white font-semibold py-3 rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Enviando…' : 'Enviar mensaje'}
-              </button>
-            </form>
-          )}
+                {error && (
+                  <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-2">{error}</p>
+                )}
 
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-accent-500 hover:bg-accent-600 text-primary-900 font-semibold py-3 rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Enviando…' : 'Enviar mensaje'}
+                </button>
+              </form>
+            )}
+
+          </div>
         </div>
-      </div>
+      </Section>
     </main>
   );
 };
@@ -152,8 +161,8 @@ const ContactPage = () => {
 function Field({ label, name, type, placeholder, value, onChange, required }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label} {required && <span className="text-red-500">*</span>}
+      <label className="block text-sm font-medium text-primary-900 mb-1">
+        {label} {required && <span className="text-primary-500">*</span>}
       </label>
       <input
         type={type}
@@ -162,7 +171,7 @@ function Field({ label, name, type, placeholder, value, onChange, required }) {
         value={value}
         onChange={onChange}
         required={required}
-        className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7A1F2D]/30 focus:border-[#7A1F2D] transition"
+        className="w-full rounded-xl border border-warm-200 bg-warm-50 px-4 py-2.5 text-sm text-primary-900 placeholder-warm-400 focus:outline-none focus:ring-2 focus:ring-accent-500/30 focus:border-accent-500 transition"
       />
     </div>
   );
@@ -171,16 +180,16 @@ function Field({ label, name, type, placeholder, value, onChange, required }) {
 function SuccessBanner({ onReset }) {
   return (
     <div className="flex flex-col items-center text-center py-8 gap-4">
-      <div className="bg-green-100 text-green-600 rounded-full p-4">
+      <div className="bg-emerald-50 text-emerald-600 rounded-full p-4">
         <CheckIcon className="h-8 w-8" />
       </div>
-      <h3 className="text-xl font-bold text-gray-800">¡Mensaje enviado!</h3>
-      <p className="text-gray-500 text-sm max-w-xs">
+      <h3 className="font-display text-xl font-bold text-primary-900">¡Mensaje enviado!</h3>
+      <p className="text-warm-600 text-sm max-w-xs">
         Gracias por escribirnos. Nos pondremos en contacto contigo a la brevedad.
       </p>
       <button
         onClick={onReset}
-        className="mt-2 text-sm text-[#7A1F2D] hover:underline font-medium"
+        className="mt-2 text-sm text-accent-600 hover:underline font-medium"
       >
         Enviar otro mensaje
       </button>
@@ -191,17 +200,17 @@ function SuccessBanner({ onReset }) {
 function ContactInfo({ icon, label, value, href }) {
   const innerContent = (
     <div>
-      <p className="font-semibold text-gray-700 group-hover:text-[#7A1F2D] transition-colors">{label}</p>
-      <p className="text-gray-500 group-hover:text-gray-800 transition-colors">{value}</p>
+      <p className="font-semibold text-primary-800 group-hover:text-primary-900 transition-colors">{label}</p>
+      <p className="text-warm-600 group-hover:text-primary-700 transition-colors">{value}</p>
     </div>
   );
 
   return (
     <li className="flex items-start gap-3 group">
-      <span className="mt-0.5 flex-shrink-0 text-[#7A1F2D] group-hover:scale-110 transition-transform">{icon}</span>
+      <span className="mt-0.5 flex-shrink-0 text-primary-700 group-hover:scale-110 transition-transform">{icon}</span>
       {href ? (
-        <a 
-          href={href} 
+        <a
+          href={href}
           target={href.includes('wa.me') ? "_blank" : undefined}
           rel={href.includes('wa.me') ? "noopener noreferrer" : undefined}
           className="cursor-pointer"

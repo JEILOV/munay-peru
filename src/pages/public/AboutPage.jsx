@@ -6,14 +6,33 @@
 // estático por naturaleza: son definiciones institucionales que no
 // cambian con frecuencia y no justifican una colección en Firestore.
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Section from '../../components/layout/Section';
+import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import quienesSomosImg from '../../assets/quienes-somos.jpg';
 import eduImg from '../../assets/edu.jpg';
 import ecoImg from '../../assets/eco.jpg';
 import ddhhImg from '../../assets/ddhh.jpg';
-import TestimonialsSection from '../../features/testimonials/components/TestimonialsSection'; // <-- 1. IMPORTAR AQUÍ
+import TestimonialsSection from '../../features/testimonials/components/TestimonialsSection';
 
 // ---------- datos estáticos institucionales ----------
+
+const MISION_VISION = [
+  {
+    id: 'mision',
+    eyebrow: 'Misión',
+   
+    text:
+      'Trabajamos en las comunidades vulnerables del Perú a través de proyectos sostenibles en educación, derechos humanos, medio ambiente y salud y bienestar. Fomentamos la participación activa, el empoderamiento y la solidaridad, promoviendo el desarrollo integral con un enfoque inclusivo y sostenible.',
+  },
+  {
+    id: 'vision',
+    eyebrow: 'Visión',
+    text:
+      'Ser una organización líder en la promoción del desarrollo social en Perú, basada en la solidaridad, el respeto y el amor por nuestra comunidad. Aspiramos a empoderar a las poblaciones vulnerables contribuyendo a un país más justo, inclusivo y próspero.',
+  },
+];
 
 const EJES = [
   {
@@ -80,18 +99,23 @@ export default function AboutPage() {
   return (
     <div className="bg-warm-50">
 
-      {/* ── HERO: Quiénes somos (layout dividido) ── */}
-      <section className="bg-gradient-to-br from-primary-800 via-primary-700 to-primary-900 py-20 sm:py-28 relative overflow-hidden">
+      {/* ── HERO: Quiénes somos ── */}
+      <Section
+        variant="primary"
+        backgroundImage="https://i.pinimg.com/736x/4f/85/f7/4f85f740cc5a66fe95c57d2cb8466604.jpg" // Pega aquí tu URL de imgbb para el fondo del hero
+        containerClassName="relative"
+      >
         {/* patrón de puntos sutil, coherente con HeroSection */}
         <div
-          className="absolute inset-0 opacity-[0.06]"
+          className="absolute inset-0 opacity-[0.06] pointer-events-none"
           style={{
             backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
             backgroundSize: '32px 32px',
           }}
           aria-hidden="true"
         />
-        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+
+        <div className="relative">
           <div className="text-center mb-14">
             <span className="inline-block rounded-full bg-warm-50/10 backdrop-blur-md px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-accent-300 border border-warm-50/10">
               Munay Perú Organization
@@ -108,40 +132,27 @@ export default function AboutPage() {
               className="w-full h-[420px] lg:h-[480px] object-cover rounded-2xl shadow-soft-lg"
             />
 
-            <div className="flex flex-col gap-6">
-              <MisionVisionCard
-                eyebrow="Misión"
-                icon={<MisionIcon />}
-                text="Trabajamos en las comunidades vulnerables del Perú a través de proyectos sostenibles en educación, derechos humanos, medio ambiente y salud y bienestar. Fomentamos la participación activa, el empoderamiento y la solidaridad, promoviendo el desarrollo integral con un enfoque inclusivo y sostenible."
-              />
-              <MisionVisionCard
-                eyebrow="Visión"
-                icon={<VisionIcon />}
-                text="Ser una organización líder en la promoción del desarrollo social en Perú, basada en la solidaridad, el respeto y el amor por nuestra comunidad. Aspiramos a empoderar a las poblaciones vulnerables contribuyendo a un país más justo, inclusivo y próspero."
-              />
-            </div>
+            <MisionVisionAccordion />
           </div>
         </div>
-      </section>
+      </Section>
 
       {/* ── IMPACTO ── */}
-      <section className="bg-accent-500 py-14 sm:py-16">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <p className="font-display text-6xl sm:text-7xl font-bold text-primary-900">
-            <AnimatedCounter end={3000} />
-          </p>
-          <p className="mt-3 text-xl font-semibold text-primary-800">
-            Personas impactadas
-          </p>
-          <p className="mt-2 text-sm text-primary-700 max-w-md mx-auto">
-            A través de actividades, alianzas estratégicas y proyectos sostenibles
-            en todo el territorio peruano.
-          </p>
-        </div>
-      </section>
+      <Section variant="accent" containerClassName="max-w-4xl text-center">
+        <p className="font-display text-6xl sm:text-7xl font-bold text-primary-900">
+          <AnimatedCounter value={3000} prefix="+" />
+        </p>
+        <p className="mt-3 text-xl font-semibold text-primary-800">
+          Personas impactadas
+        </p>
+        <p className="mt-2 text-sm text-primary-700 max-w-md mx-auto">
+          A través de actividades, alianzas estratégicas y proyectos sostenibles
+          en todo el territorio peruano.
+        </p>
+      </Section>
 
       {/* ── EJES DE ACCIÓN ── */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <Section variant="warm">
         <SectionHeader
           eyebrow="Lo que hacemos"
           title="Nuestros ejes de acción"
@@ -151,33 +162,31 @@ export default function AboutPage() {
             <AxisCard key={eje.id} {...eje} />
           ))}
         </div>
-      </section>
+      </Section>
 
       {/* ── VALORES ── */}
-      <section className="bg-white border-y border-warm-200 py-16 sm:py-20">
-       <style>{`
+      <Section variant="white" containerClassName="max-w-4xl">
+        <style>{`
           @keyframes float-organic {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             33% { transform: translateY(-8px) rotate(-1.5deg); }
             66% { transform: translateY(5px) rotate(1.5deg); }
           }
         `}</style>
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            eyebrow="Lo que nos guía"
-            title="Nuestros 12 valores"
-            centered
-          />
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            {VALUES.map((value, index) => (
-              <ValueBadge key={value} label={value} index={index} />
-            ))}
-          </div>
+        <SectionHeader
+          eyebrow="Lo que nos guía"
+          title="Nuestros 12 valores"
+          centered
+        />
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
+          {VALUES.map((value, index) => (
+            <ValueBadge key={value} label={value} index={index} />
+          ))}
         </div>
-      </section>
+      </Section>
 
       {/* ── EQUIPO ── */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <Section variant="warm">
         <SectionHeader
           eyebrow="Quiénes lo hacemos posible"
           title="Nuestro equipo"
@@ -201,10 +210,10 @@ export default function AboutPage() {
             ))}
           </div>
         )}
-      </section>
+      </Section>
 
       {/* ── TESTIMONIOS ── */}
-      <TestimonialsSection /> {/* <-- 2. COLOCO AQUÍ EL COMPONENTE */}
+      <TestimonialsSection />
 
     </div>
   );
@@ -225,16 +234,88 @@ function SectionHeader({ eyebrow, title, centered = false }) {
   );
 }
 
-function MisionVisionCard({ eyebrow, text }) {
+/**
+ * MisionVisionAccordion — reemplaza los dos bloques estáticos de antes.
+ * Un solo item permanece expandido a la vez; pasar el mouse por encima
+ * de un item lo expande (no hace falta clic), y cada tarjeta entra con
+ * un fade+slide escalonado cuando la sección aparece en el viewport.
+ * La barra dorada lateral crece/encoge según el estado, reforzando
+ * visualmente cuál es el item activo.
+ */
+function MisionVisionAccordion() {
+  const [openId, setOpenId] = useState(MISION_VISION[0].id);
+
+  const containerVariants = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.15 } },
+  };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 16 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  };
+
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-warm-50/10 backdrop-blur-sm border border-warm-50/15 p-8 group">
-      {/* Línea decorativa elegante que crece al hacer hover */}
-      <div className="absolute top-0 left-0 w-1.5 h-full bg-accent-400 transform origin-top scale-y-50 group-hover:scale-y-100 transition-transform duration-500" />
-      <h3 className="font-display text-lg font-bold tracking-widest text-accent-400 uppercase mb-4 pl-4">
-        {eyebrow}
-      </h3>
-      <p className="text-warm-100 leading-relaxed text-[0.95rem] pl-4">{text}</p>
-    </div>
+    <motion.div
+      className="flex flex-col gap-4"
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.4 }}
+    >
+      {MISION_VISION.map((item) => {
+        const isOpen = openId === item.id;
+
+        return (
+          <motion.div
+            key={item.id}
+            variants={itemVariants}
+            onHoverStart={() => setOpenId(item.id)}
+            onClick={() => setOpenId(item.id)}
+            className="relative overflow-hidden rounded-2xl bg-warm-50/10 backdrop-blur-sm border border-warm-50/15 cursor-pointer"
+          >
+            {/* Barra lateral dorada: crece cuando el item está activo */}
+            <motion.div
+              className="absolute top-0 left-0 w-1.5 h-full bg-accent-400 origin-top"
+              animate={{ scaleY: isOpen ? 1 : 0.35, opacity: isOpen ? 1 : 0.5 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            />
+
+            <div className="p-8 pl-10">
+              <div className="flex items-center justify-between gap-4">
+                <span className="flex items-center gap-3 font-display text-lg font-bold tracking-widest text-accent-400 uppercase">
+                  {item.icon}
+                  {item.eyebrow}
+                </span>
+                <motion.span
+                  animate={{ rotate: isOpen ? 45 : 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="text-accent-400 text-2xl leading-none shrink-0"
+                  aria-hidden="true"
+                >
+                  +
+                </motion.span>
+              </div>
+
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.35, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                  >
+                    <p className="pt-4 text-warm-100 leading-relaxed text-[0.95rem]">
+                      {item.text}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        );
+      })}
+    </motion.div>
   );
 }
 
@@ -272,6 +353,7 @@ function AxisCard({ title, description, image }) {
     </div>
   );
 }
+
 /**
  * ValueBadge — float sutil tipo burbuja orgánica. El keyframe se inyecta
  * una sola vez en la sección de Valores (ver <style> arriba); aquí solo
@@ -282,7 +364,7 @@ function AxisCard({ title, description, image }) {
  */
 function ValueBadge({ label, index }) {
   // Alternamos la duración de la animación (3s, 4s, 5s) para crear un efecto orgánico desfasado
-  const duration = 3 + (index % 3); 
+  const duration = 3 + (index % 3);
   const delay = index * 0.2;
 
   return (
@@ -296,60 +378,6 @@ function ValueBadge({ label, index }) {
       {label}
     </span>
   );
-}
-
-/**
- * AnimatedCounter — cuenta de 0 a `end` solo cuando entra en el viewport
- * (IntersectionObserver, no scroll listeners, por performance), y solo
- * una vez: no se reinicia si el usuario sube y vuelve a bajar. El easing
- * (easeOutExpo) arranca rápido y desacelera al final, se siente más
- * natural que una interpolación lineal para un número de impacto.
- */
-function AnimatedCounter({ end, duration = 1800 }) {
-  const [count, setCount] = useState(0);
-  const [hasStarted, setHasStarted] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node || hasStarted) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setHasStarted(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.4 },
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [hasStarted]);
-
-  useEffect(() => {
-    if (!hasStarted) return;
-
-    let rafId;
-    const startTime = performance.now();
-
-    function tick(now) {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      setCount(Math.round(eased * end));
-
-      if (progress < 1) {
-        rafId = requestAnimationFrame(tick);
-      }
-    }
-
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-  }, [hasStarted, end, duration]);
-
-  return <span ref={ref}>+{count.toLocaleString('es-PE')}</span>;
 }
 
 function TeamMemberCard({ member }) {

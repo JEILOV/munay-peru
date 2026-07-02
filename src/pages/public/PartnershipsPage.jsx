@@ -1,4 +1,5 @@
 // src/pages/public/PartnershipsPage.jsx
+import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import { useState } from 'react';
 import { submitPartnershipForm } from '../../features/partnerships/services/partnershipsService';
 import Section from '../../components/layout/Section';
@@ -72,14 +73,17 @@ export default function PartnershipsPage() {
             el desarrollo de comunidades en todo el Perú.
           </p>
 
-          <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-3 text-warm-100 text-sm">
-            <div className="flex items-center gap-2">
+         <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-3 text-warm-100 text-sm">
+            <div className="flex items-center gap-1.5">
               <GlobeIcon />
-              +30 organizaciones aliadas
+              <AnimatedCounter value={30} prefix="+" className="font-bold text-accent-400 text-base" /> 
+              <span>organizaciones aliadas</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <StarIcon />
-              Presencia en 4 regiones
+              <span>Presencia en</span>
+              <AnimatedCounter value={4} className="font-bold text-accent-400 text-base" /> 
+              <span>regiones</span>
             </div>
           </div>
         </div>

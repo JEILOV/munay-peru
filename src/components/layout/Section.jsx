@@ -24,6 +24,7 @@ const VARIANTS = {
   primary: 'bg-primary-900 text-warm-50',
   white: 'bg-white text-primary-900',
   warm: 'bg-warm-50 text-primary-900',
+  accent: 'bg-accent-500 text-primary-900',
   hero: 'text-warm-50',
 };
 
