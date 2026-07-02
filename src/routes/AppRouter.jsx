@@ -26,6 +26,7 @@ import HeadquartersDetailPage from '../pages/public/HeadquartersDetailPage';
 import VolunteerPage from '../pages/public/VolunteerPage';
 import AboutPage from '../pages/public/AboutPage';
 import ContactPage from '../pages/public/ContactPage';
+import PartnershipsPage from '../pages/public/PartnershipsPage'; // <-- NUEVA IMPORTACIÓN PÚBLICA
 import NotFoundPage from '../pages/public/NotFoundPage';
 
 // Páginas admin
@@ -36,7 +37,8 @@ import ProjectEditorPage from '../pages/admin/ProjectEditorPage';
 import HeadquartersManagerPage from '../pages/admin/HeadquartersManagerPage';
 import VolunteersInboxPage from '../pages/admin/VolunteersInboxPage';
 import TeamManagerPage from '../pages/admin/TeamManagerPage';
-import TestimonialsManagerPage from '../pages/admin/TestimonialsManagerPage'; // <-- NUEVA IMPORTACIÓN
+import TestimonialsManagerPage from '../pages/admin/TestimonialsManagerPage';
+import PartnershipsManagerPage from '../pages/admin/PartnershipsManagerPage'; // <-- NUEVA IMPORTACIÓN ADMIN
 
 export default function AppRouter() {
   return (
@@ -53,6 +55,7 @@ export default function AppRouter() {
           <Route path="/voluntarios" element={<VolunteerPage />} />
           <Route path="/nosotros" element={<AboutPage />} />
           <Route path="/contacto" element={<ContactPage />} />
+          <Route path="/alianzas" element={<PartnershipsPage />} /> {/* <-- NUEVA RUTA PÚBLICA */}
           {/* Ruta explícita para redirects intencionales (ej. slug no
               encontrado en ProjectDetailPage). El catch-all "*" más abajo
               sigue cubriendo cualquier URL que el usuario escriba mal. */}
@@ -76,7 +79,10 @@ export default function AppRouter() {
             <Route path="/admin/equipo" element={<TeamManagerPage />} />
 
             {/* Gestión de testimonios */}
-            <Route path="/admin/testimonios" element={<TestimonialsManagerPage />} /> {/* <-- NUEVA RUTA */}
+            <Route path="/admin/testimonios" element={<TestimonialsManagerPage />} />
+
+            {/* Gestión de alianzas */}
+            <Route path="/admin/alianzas" element={<PartnershipsManagerPage />} /> {/* <-- NUEVA RUTA ADMIN */}
 
             {/* Gestión de sedes */}
             <Route path="/admin/sedes" element={<HeadquartersManagerPage />} />

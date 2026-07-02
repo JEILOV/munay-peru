@@ -8,7 +8,8 @@ const NAV_ITEMS = [
   { to: '/admin/sedes',       label: 'Gestión de Sedes',     icon: SedesIcon                },
   { to: '/admin/proyectos',   label: 'Gestión de Proyectos', icon: ProjectsIcon             },
   { to: '/admin/equipo',      label: 'Gestión de Equipo',     icon: PeopleIcon               },
-  { to: '/admin/testimonios', label: 'Testimonios',          icon: StarIcon                 }, // <-- NUEVA RUTA
+  { to: '/admin/testimonios', label: 'Testimonios',          icon: StarIcon                 },
+  { to: '/admin/alianzas',    label: 'Alianzas',             icon: HandshakeIcon            }, // <-- NUEVA RUTA
   { to: '/admin/voluntarios', label: 'Bandeja de Entrada',   icon: InboxIcon                },
 ];
 
@@ -110,10 +111,18 @@ function PeopleIcon(props) {
   );
 }
 
-function StarIcon(props) { // <-- NUEVO ÍCONO
+function StarIcon(props) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
+
+function HandshakeIcon(props) { // <-- NUEVO ÍCONO
+  return (
+    <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.82m5.84-2.56a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.82m2.56-5.84a14.98 14.98 0 00-2.58 5.84m2.699 2.7a6 6 0 11-8.485-8.485" />
     </svg>
   );
 }
