@@ -6,22 +6,47 @@
 // el conocimiento de "qué es un proyecto y qué filtros le aplican" vive
 // aquí, junto al resto del dominio.
 //
-// DECISIÓN: "Estado Activo/Inactivo" del formulario se mapea a nuestro
-// campo real `status: 'draft' | 'published'` (definido desde la primera
-// sesión), NO a un booleano nuevo. Un proyecto no necesita dos campos de
-// estado potencialmente contradictorios — "Activo" en el formulario
-// significa exactamente "published" en Firestore.
+// EXTENSIÓN Fase 3 — Eventos:
+// Los documentos ahora pueden tener:
+//   type: 'initiative' | 'event'    (ausente = se trata como 'initiative')
+//   eventDate: Timestamp de Firestore (solo para type === 'event')
+//   registrationOpen: boolean       (solo para type === 'event')
+//
+// DECISIÓN sobre índices compuestos:
+// Las queries de eventos (type == 'event' + eventDate >= hoy + orderBy eventDate)
+// REQUIEREN un índice compuesto en Firestore. Sin él, Firestore lanza un
+// error con un link directo para crearlo. Cuando lo veas en la consola,
+// haz clic en ese link — Firebase crea el índice automáticamente en ~1 min.
+// Los índices necesarios son:
+//   - Collection: projects | Fields: type ASC, eventDate ASC
+//   - Collection: projects | Fields: status ASC, eventDate ASC (para eventos publicados)
 
-import { addDoc, updateDoc, deleteDoc, doc, collection, serverTimestamp } from 'firebase/firestore';
+import {
+  addDoc, updateDoc, deleteDoc, doc,
+  collection, serverTimestamp,
+  query, where, orderBy, getDocs, Timestamp,
+} from 'firebase/firestore';
 import { getCollection, getDocument, getDocumentByField } from '../../../services/firebase/firestore';
 import { db } from '../../../services/firebase/config';
 
 const COLLECTION = 'projects';
 
+/* ════════════════════════════════════════════════════════════════════════════
+   FUNCIONES PÚBLICAS — WEB PÚBLICA
+══════════════════════════════════════════════════════════════════════════════ */
+
 /**
- * Proyectos publicados para la web pública, opcionalmente filtrados por sede.
- * SIEMPRE filtra status === 'published' — un visitante de la web pública
- * nunca debe ver un proyecto en borrador, sin importar qué pase en el CMS.
+ * Iniciativas publicadas para la web pública (portafolio general).
+ * Incluye:
+ *  - Documentos con type === 'initiative' o sin campo 'type' (legacy)
+ *  - Eventos PASADOS con status === 'published' (ya realizados → portafolio)
+ * Excluye: eventos futuros (esos van en fetchUpcomingEvents).
+ *
+ * "Pasado" se evalúa en el cliente comparando eventDate con Date.now(),
+ * porque Firestore no permite hacer `eventDate < hoy` junto con los otros
+ * filtros sin un índice muy específico. El trade-off es aceptable: la lista
+ * pública de iniciativas no es tan grande como para que el filtro cliente
+ * sea un problema de rendimiento real.
  */
 export async function fetchPublishedProjects({ sedeId } = {}) {
   const filters = [['status', '==', 'published']];
@@ -29,15 +54,64 @@ export async function fetchPublishedProjects({ sedeId } = {}) {
     filters.push(['sedeId', '==', sedeId]);
   }
 
-  return getCollection(COLLECTION, {
+  const all = await getCollection(COLLECTION, {
     filters,
     orderBy: ['date', 'desc'],
+  });
+
+  const now = Date.now();
+
+  return all.filter((p) => {
+    const isInitiative = !p.type || p.type === 'initiative';
+    const isEvent      = p.type === 'event';
+    const eventDate    = toMs(p.eventDate);
+
+    // Incluir: iniciativas siempre + eventos ya realizados (fecha pasada)
+    return isInitiative || (isEvent && eventDate !== null && eventDate < now);
   });
 }
 
 /**
- * TODOS los proyectos (published Y draft), para el CMS. El admin necesita
- * ver y poder editar borradores, no solo lo ya publicado.
+ * Eventos futuros publicados, ordenados por fecha ascendente (el más
+ * próximo primero). Esto es lo que alimenta la sección "Próximos Eventos"
+ * en la web pública.
+ *
+ * REQUIERE índice compuesto en Firestore:
+ *   projects | status ASC, type ASC, eventDate ASC
+ * Firestore te mostrará el link para crearlo la primera vez que se ejecute.
+ */
+export async function fetchUpcomingEvents() {
+  const now = Timestamp.now();
+
+  const q = query(
+    collection(db, COLLECTION),
+    where('status',    '==', 'published'),
+    where('type',      '==', 'event'),
+    where('eventDate', '>=', now),
+    orderBy('eventDate', 'asc'),
+  );
+
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * Un proyecto o evento por su slug (usado en ProjectDetailPage).
+ * Devuelve null si no existe O si no está publicado.
+ */
+export async function fetchProjectBySlug(slug) {
+  const project = await getDocumentByField(COLLECTION, 'slug', slug);
+  if (!project || project.status !== 'published') return null;
+  return project;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   FUNCIONES CMS — PANEL ADMIN
+══════════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * TODOS los proyectos y eventos (published Y draft), para el CMS.
+ * Ordenados por fecha de creación descendente.
  */
 export async function fetchAllProjects() {
   return getCollection(COLLECTION, {
@@ -46,71 +120,114 @@ export async function fetchAllProjects() {
 }
 
 /**
- * Un proyecto por su slug (usado en ProjectDetailPage). Devuelve null si
- * no existe O si existe pero no está publicado — un slug de borrador no
- * debe ser accesible públicamente solo por adivinar la URL.
+ * Solo eventos (type === 'event'), todos los estados, para el CMS.
+ * Útil si en el futuro quieres una vista de "Gestión de Eventos" separada.
  */
-export async function fetchProjectBySlug(slug) {
-  const project = await getDocumentByField(COLLECTION, 'slug', slug);
-  if (!project || project.status !== 'published') return null;
-  return project;
+export async function fetchAllEvents() {
+  const q = query(
+    collection(db, COLLECTION),
+    where('type', '==', 'event'),
+    orderBy('eventDate', 'asc'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
 /**
- * Un proyecto por su Firestore ID (usado en el CMS, donde SÍ se necesita
- * poder editar/ver borradores — por eso NO filtra por status, a diferencia
- * de fetchProjectBySlug).
+ * Un proyecto por su Firestore ID (CMS). NO filtra por status — el admin
+ * necesita poder editar borradores.
  */
 export async function fetchProjectById(id) {
   return getDocument(COLLECTION, id);
 }
 
 /**
- * Crea un nuevo proyecto. Genera el `slug` automáticamente a partir del
- * título (el formulario del CMS no pide un slug manual) y verifica que
- * no choque con uno existente, agregando un sufijo numérico si es necesario
- * — sin esto, dos proyectos titulados igual ("Biohuertos escolares") en
- * sedes distintas generarían el mismo slug y el segundo pisaría
- * silenciosamente la URL del primero en fetchProjectBySlug.
+ * Crea un nuevo proyecto o evento.
+ *
+ * Para eventos, `data` debe incluir:
+ *   type: 'event'
+ *   eventDate: string ISO (ej. "2025-07-20") — se convierte a Timestamp aquí
+ *   registrationOpen: boolean
+ *
+ * Para iniciativas:
+ *   type: 'initiative' (o ausente)
  */
 export async function createProject(data) {
   const slug = await generateUniqueSlug(data.title);
 
   const docRef = await addDoc(collection(db, COLLECTION), {
-    ...data,
+    ...normalizeEventFields(data),
     slug,
-    date: data.date ?? serverTimestamp(),
+    date:      data.date ?? serverTimestamp(),
     createdAt: serverTimestamp(),
   });
+
   return { id: docRef.id, ...data, slug };
 }
 
 /**
- * Actualiza un proyecto existente. NO regenera el slug aunque cambie el
- * título — cambiar la URL de un proyecto ya publicado rompería enlaces
- * compartidos (redes sociales, WhatsApp, etc.) sin que el admin lo pida
- * explícitamente. Si en el futuro quieres permitir editar el slug a
- * propósito, sería un campo separado y explícito en el formulario, no un
- * efecto secundario automático de editar el título.
+ * Actualiza un proyecto o evento existente.
+ * NO regenera el slug aunque cambie el título (ver nota en versión original).
  */
 export async function updateProject(id, data) {
   const docRef = doc(db, COLLECTION, id);
   await updateDoc(docRef, {
-    ...data,
+    ...normalizeEventFields(data),
     updatedAt: serverTimestamp(),
   });
   return { id, ...data };
 }
 
 export async function deleteProject(id) {
-  const docRef = doc(db, COLLECTION, id);
-  await deleteDoc(docRef);
+  await deleteDoc(doc(db, COLLECTION, id));
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   HELPERS PRIVADOS
+══════════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * Convierte el campo eventDate de string ISO a Timestamp de Firestore,
+ * y limpia los campos de evento si el tipo es 'initiative'.
+ * Así el servicio siempre guarda tipos correctos sin importar lo que
+ * venga del formulario.
+ */
+function normalizeEventFields(data) {
+  const normalized = { ...data };
+
+  if (normalized.type === 'event') {
+    // El formulario entrega eventDate como string "YYYY-MM-DD"
+    // Lo convertimos a Timestamp para poder hacer queries de rango con él
+    if (normalized.eventDate && typeof normalized.eventDate === 'string') {
+      normalized.eventDate = Timestamp.fromDate(new Date(normalized.eventDate));
+    }
+    // Asegurar booleano
+    normalized.registrationOpen = Boolean(normalized.registrationOpen);
+  } else {
+    // Iniciativa: limpiar campos de evento para no dejar basura
+    normalized.type             = 'initiative';
+    normalized.eventDate        = null;
+    normalized.registrationOpen = null;
+  }
+
+  return normalized;
 }
 
 /**
- * Genera un slug a partir de un título, verificando unicidad contra
- * Firestore. Si "biohuertos-escolares" ya existe, prueba
- * "biohuertos-escolares-2", "-3", etc.
+ * Convierte un Timestamp de Firestore (o Date, o ms) a milisegundos.
+ * Devuelve null si el valor es falsy o no reconocible.
+ */
+function toMs(value) {
+  if (!value) return null;
+  if (typeof value.toMillis === 'function') return value.toMillis(); // Firestore Timestamp
+  if (value instanceof Date)               return value.getTime();
+  if (typeof value === 'number')           return value;
+  return null;
+}
+
+/**
+ * Genera un slug único verificando contra Firestore.
+ * Si "biohuertos-escolares" ya existe, prueba "biohuertos-escolares-2", "-3", etc.
  */
 async function generateUniqueSlug(title) {
   const baseSlug = slugify(title);
@@ -129,7 +246,7 @@ function slugify(text) {
   return text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // quita acentos (á -> a, ñ se preserva aparte abajo)
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/ñ/g, 'n')
     .replace(/[^a-z0-9\s-]/g, '')
     .trim()
