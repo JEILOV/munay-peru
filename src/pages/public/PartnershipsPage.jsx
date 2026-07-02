@@ -1,6 +1,7 @@
 // src/pages/public/PartnershipsPage.jsx
 import { useState } from 'react';
 import { submitPartnershipForm } from '../../features/partnerships/services/partnershipsService';
+import Section from '../../components/layout/Section';
 
 const ORG_TYPES = [
   'ONG / Asociación civil',
@@ -51,148 +52,131 @@ export default function PartnershipsPage() {
     <main className="min-h-screen bg-warm-50">
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <div className="relative bg-primary-900 overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute -top-10 -left-10 w-72 h-72 bg-warm-50 rounded-full" />
-          <div className="absolute -bottom-16 -right-10 w-96 h-96 bg-accent-500 rounded-full" />
-        </div>
+      <Section
+        variant="primary"
+        backgroundImage="https://i.pinimg.com/1200x/78/b6/ef/78b6efab8a7896522e18996bb1e6a4b2.jpg" // Aquí pegas tu URL de ImgBB
+        containerClassName="flex flex-col md:flex-row items-center gap-10 lg:gap-16"
+      >
+        <div className="flex-1 text-center md:text-left">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-accent-400">
+            <HandshakeIcon />
+            Alianzas estratégicas
+          </span>
 
-        <div className="relative container mx-auto max-w-5xl px-4 py-16 md:py-20 flex flex-col md:flex-row items-center gap-10">
-          <div className="flex-1 text-center md:text-left">
-            <span className="inline-block bg-accent-500/20 text-accent-300 text-xs font-semibold px-3 py-1 rounded-full mb-4 tracking-wide uppercase">
-              Alianzas estratégicas
-            </span>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-warm-50 leading-tight">
-              Construyamos juntos <br />
-              <span className="text-accent-400">un Perú mejor.</span>
-            </h1>
-            <p className="mt-4 text-warm-100 text-lg leading-relaxed max-w-md">
-              Si tu organización comparte nuestra visión, queremos conocerte.
-              Las alianzas estratégicas multiplican el impacto de cada acción.
-            </p>
+          <h1 className="mt-5 font-display text-3xl md:text-4xl lg:text-5xl font-bold text-warm-50 leading-tight">
+            Construyamos juntos un futuro con identidad
+          </h1>
 
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              {[
-                { icon: <HandshakeIcon />, text: 'Alianza real' },
-                { icon: <GlobeIcon />,     text: 'Alcance nacional' },
-                { icon: <StarIcon />,      text: 'Impacto medible' },
-              ].map(({ icon, text }) => (
-                <div key={text} className="flex items-center gap-2 text-sm text-warm-100">
-                  <span className="text-accent-400">{icon}</span>
-                  {text}
-                </div>
-              ))}
+          <p className="mt-4 text-warm-200 text-base md:text-lg max-w-xl mx-auto md:mx-0">
+            Sumamos organizaciones, empresas e instituciones comprometidas con
+            el desarrollo de comunidades en todo el Perú.
+          </p>
+
+          <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-3 text-warm-100 text-sm">
+            <div className="flex items-center gap-2">
+              <GlobeIcon />
+              +30 organizaciones aliadas
+            </div>
+            <div className="flex items-center gap-2">
+              <StarIcon />
+              Presencia en 4 regiones
             </div>
           </div>
-
-          {/* Stats */}
-          <div className="flex-shrink-0 grid grid-cols-2 gap-3 w-full max-w-xs">
-            {[
-              { value: '+10',  label: 'Aliados actuales' },
-              { value: '4',    label: 'Regiones activas' },
-              { value: '+50',  label: 'Proyectos conjuntos' },
-              { value: '100%', label: 'Transparencia' },
-            ].map(({ value, label }) => (
-              <div key={label} className="bg-warm-50/10 backdrop-blur rounded-2xl p-4 text-center">
-                <p className="font-display text-2xl font-bold text-accent-400">{value}</p>
-                <p className="text-xs text-warm-200 mt-1 leading-tight">{label}</p>
-              </div>
-            ))}
-          </div>
         </div>
-      </div>
+      </Section>
 
       {/* ── Formulario ────────────────────────────────────────────────────── */}
-      <div className="container mx-auto max-w-3xl px-4 py-14">
+      <Section variant="warm" containerClassName="max-w-3xl">
         <div className="text-center mb-10">
           <h2 className="font-display text-2xl font-bold text-primary-900">
             Cuéntanos sobre tu organización
           </h2>
-          <p className="text-warm-600 mt-2 text-sm">
-            Revisamos cada solicitud con cuidado. Te contactaremos en un máximo de 5 días hábiles.
+          <p className="mt-2 text-warm-600 text-sm max-w-lg mx-auto">
+            Completa el formulario y nuestro equipo evaluará tu propuesta de alianza.
           </p>
         </div>
 
         {success ? (
-          <div className="bg-white rounded-2xl shadow-sm p-8">
-            <SuccessBanner onReset={() => setSuccess(false)} />
-          </div>
+          <SuccessBanner onReset={() => setSuccess(false)} />
         ) : (
-          <form onSubmit={handleSubmit} noValidate>
-
-            {/* Tarjeta 1: Datos de la organización */}
-            <FormCard title="Datos de la Organización">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <form onSubmit={handleSubmit}>
+            <FormCard title="Datos de la organización">
+              <div className="grid sm:grid-cols-2 gap-5">
                 <Field
-                  label="Nombre de la organización" name="orgName"
-                  placeholder="Ej. Fundación Raíces"
-                  value={form.orgName} onChange={handleChange} required
-                  className="sm:col-span-2"
+                  label="Nombre de la organización"
+                  name="orgName"
+                  value={form.orgName}
+                  onChange={handleChange}
+                  required
                 />
                 <SelectField
-                  label="Tipo de entidad" name="orgType"
-                  value={form.orgType} onChange={handleChange}
-                  options={ORG_TYPES} required
-                  className="sm:col-span-2"
+                  label="Tipo de organización"
+                  name="orgType"
+                  value={form.orgType}
+                  onChange={handleChange}
+                  options={ORG_TYPES}
+                  required
+                />
+              </div>
+            </FormCard>
+
+            <FormCard title="Datos de contacto">
+              <div className="grid sm:grid-cols-2 gap-5">
+                <Field
+                  label="Representante"
+                  name="representative"
+                  value={form.representative}
+                  onChange={handleChange}
+                  required
                 />
                 <Field
-                  label="Representante o contacto" name="representative"
-                  placeholder="Nombre completo del responsable"
-                  value={form.representative} onChange={handleChange} required
+                  label="Correo electrónico"
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
+                <Field
+                  label="Teléfono"
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
                   className="sm:col-span-2"
                 />
               </div>
             </FormCard>
 
-            {/* Tarjeta 2: Contacto */}
-            <FormCard title="Datos de Contacto">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Field
-                  label="Correo electrónico institucional" name="email" type="email"
-                  placeholder="contacto@organizacion.org"
-                  value={form.email} onChange={handleChange} required
-                />
-                <Field
-                  label="Teléfono / WhatsApp" name="phone" type="tel"
-                  placeholder="+51 999 999 999"
-                  value={form.phone} onChange={handleChange} required
-                />
-              </div>
-            </FormCard>
-
-            {/* Tarjeta 3: Propuesta */}
-            <FormCard title="Propuesta de Alianza">
+            <FormCard title="Propuesta">
               <label className="block text-sm font-medium text-primary-900 mb-1">
-                ¿Cómo podríamos colaborar juntos?{' '}
+                Cuéntanos brevemente tu propuesta de alianza{' '}
                 <span className="text-primary-500">*</span>
               </label>
               <textarea
                 name="proposal"
                 rows={5}
-                placeholder="Describe tu organización, sus objetivos, y en qué áreas ves oportunidades de colaboración con Munay Perú…"
                 value={form.proposal}
                 onChange={handleChange}
                 required
-                className="w-full rounded-xl border border-warm-200 bg-warm-50 px-4 py-2.5 text-sm text-primary-900 placeholder-warm-400 focus:outline-none focus:ring-2 focus:ring-accent-500/30 focus:border-accent-500 transition resize-none"
+                placeholder="¿Cómo te imaginas colaborando con Munay Perú?"
+                className="w-full rounded-xl border border-warm-200 bg-warm-50 px-4 py-2.5 text-sm text-primary-900 placeholder-warm-400 focus:outline-none focus:ring-2 focus:ring-accent-500/30 focus:border-accent-500 transition"
               />
             </FormCard>
 
             {error && (
-              <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2 mb-4">
-                {error}
-              </p>
+              <p className="text-sm text-red-600 mb-4 text-center">{error}</p>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-accent-500 hover:bg-accent-600 text-primary-900 font-semibold py-3 rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full rounded-xl bg-accent-500 hover:bg-accent-600 text-primary-900 font-semibold py-3 transition disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading ? 'Enviando solicitud…' : 'Enviar solicitud de alianza'}
+              {loading ? 'Enviando…' : 'Enviar solicitud'}
             </button>
           </form>
         )}
-      </div>
+      </Section>
     </main>
   );
 }
