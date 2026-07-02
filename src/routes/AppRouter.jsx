@@ -27,6 +27,7 @@ import VolunteerPage from '../pages/public/VolunteerPage';
 import AboutPage from '../pages/public/AboutPage';
 import ContactPage from '../pages/public/ContactPage';
 import PartnershipsPage from '../pages/public/PartnershipsPage'; // <-- NUEVA IMPORTACIÓN PÚBLICA
+import EventsPage from '../pages/public/EventsPage';
 import NotFoundPage from '../pages/public/NotFoundPage';
 
 // Páginas admin
@@ -56,6 +57,7 @@ export default function AppRouter() {
           <Route path="/nosotros" element={<AboutPage />} />
           <Route path="/contacto" element={<ContactPage />} />
           <Route path="/alianzas" element={<PartnershipsPage />} /> {/* <-- NUEVA RUTA PÚBLICA */}
+          <Route path="/eventos" element={<EventsPage />} />
           {/* Ruta explícita para redirects intencionales (ej. slug no
               encontrado en ProjectDetailPage). El catch-all "*" más abajo
               sigue cubriendo cualquier URL que el usuario escriba mal. */}

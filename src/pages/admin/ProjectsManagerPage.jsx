@@ -11,7 +11,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Button from '../../components/ui/Button';
-import ProjectFormModal from '../../features/projects/components/ProjectFormModal';
 import {
   fetchAllProjects,
   createProject,
@@ -20,15 +19,15 @@ import {
 } from '../../features/projects/services/projectsService';
 import { fetchAllHeadquarters } from '../../features/headquarters/services/headquartersService';
 import { compressImage, uploadImageToImgBB } from '../../services/imgbb/imgbbService';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProjectsManagerPage() {
+  const navigate = useNavigate(); // <-- AGREGA ESTA LÍNEA
   const [projects, setProjects] = useState([]);
   const [sedes, setSedes] = useState([]);
   const [isLoadingList, setIsLoadingList] = useState(true);
   const [listError, setListError] = useState(null);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [savingStage, setSavingStage] = useState(null); // 'compressing' | 'uploading' | 'saving'
   const [saveError, setSaveError] = useState(null);
@@ -58,23 +57,7 @@ export default function ProjectsManagerPage() {
     loadData();
   }, [loadData]);
 
-  function openCreateModal() {
-    setEditingProject(null);
-    setSaveError(null);
-    setIsModalOpen(true);
-  }
 
-  function openEditModal(project) {
-    setEditingProject(project);
-    setSaveError(null);
-    setIsModalOpen(true);
-  }
-
-  function closeModal() {
-    if (isSaving) return;
-    setIsModalOpen(false);
-    setEditingProject(null);
-  }
 
   /**
    * Orquestación: comprimir -> subir -> guardar. Cada paso actualiza
@@ -82,43 +65,7 @@ export default function ProjectsManagerPage() {
    * mensaje específico de qué está pasando, en vez de un "Guardando…"
    * genérico durante lo que puede ser varios segundos con una imagen grande.
    */
-  async function handleSubmit({ coverImageFile, coverImageUrl, ...projectData }) {
-    setIsSaving(true);
-    setSaveError(null);
-
-    try {
-      let finalImageUrl = coverImageUrl;
-
-      if (coverImageFile) {
-        setSavingStage('compressing');
-        const compressedFile = await compressImage(coverImageFile);
-
-        setSavingStage('uploading');
-        finalImageUrl = await uploadImageToImgBB(compressedFile);
-      }
-
-      setSavingStage('saving');
-      const payload = { ...projectData, coverImage: finalImageUrl ?? '' };
-
-      if (editingProject) {
-        await updateProject(editingProject.id, payload);
-      } else {
-        await createProject(payload);
-      }
-
-      await loadData();
-      setIsModalOpen(false);
-      setEditingProject(null);
-    } catch (err) {
-      console.error('[ProjectsManagerPage] Error al guardar el proyecto:', err);
-      setSaveError(
-        err.message || 'Ocurrió un error al guardar el proyecto. Intenta nuevamente.',
-      );
-    } finally {
-      setIsSaving(false);
-      setSavingStage(null);
-    }
-  }
+  
 
   async function handleDelete(project) {
     const confirmed = window.confirm(
@@ -153,9 +100,12 @@ export default function ProjectsManagerPage() {
               : `${projects.length} ${projects.length === 1 ? 'proyecto registrado' : 'proyectos registrados'}`}
           </p>
         </div>
-        <Button variant="primary" icon={<PlusIcon />} onClick={openCreateModal}>
-          Agregar Proyecto
-        </Button>
+       <Button 
+  onClick={() => navigate('/admin/proyectos/nuevo')} 
+  variant="primary"
+>
+  + Nuevo Proyecto
+</Button>
       </div>
 
       {/* Tabla */}
@@ -215,9 +165,9 @@ export default function ProjectsManagerPage() {
                   </td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center justify-end gap-1">
-                      <IconButton label="Editar" onClick={() => openEditModal(project)}>
-                        <EditIcon />
-                      </IconButton>
+                     <IconButton label="Editar" onClick={() => navigate(`/admin/proyectos/${project.id}/editar`)}>
+  <EditIcon />
+</IconButton>
                       <IconButton
                         label="Eliminar"
                         tone="danger"
@@ -242,21 +192,7 @@ export default function ProjectsManagerPage() {
         )}
       </div>
 
-      <ProjectFormModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onSubmit={handleSubmit}
-        initialData={editingProject}
-        isSaving={isSaving}
-        savingStage={savingStage}
-        sedes={sedes}
-      />
-
-      {saveError && isModalOpen && (
-        <div className="fixed bottom-6 right-6 z-[60] max-w-sm rounded-xl bg-red-50 border border-red-200 px-4 py-3 shadow-soft-lg">
-          <p className="text-sm font-medium text-red-700">{saveError}</p>
-        </div>
-      )}
+  
     </div>
   );
 }

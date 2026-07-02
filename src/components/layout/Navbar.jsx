@@ -15,6 +15,7 @@ import logoMunay from '../../assets/logo-munay.png'; // Asegúrate de que el nom
 const NAV_LINKS = [
   { to: '/', label: 'Inicio', end: true },
   { to: '/nosotros', label: 'Nosotros' },
+  { to: '/eventos', label: 'Eventos' },
   { to: '/proyectos', label: 'Proyectos' },
   { to: '/sedes', label: 'Sedes' },
   { to: '/alianzas', label: 'Alianzas' },
