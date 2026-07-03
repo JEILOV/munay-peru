@@ -89,7 +89,7 @@ function CounterCard({ target, prefix, label, sublabel }) {
   return (
     <div
       ref={ref}
-      className="animate-count-up rounded-2xl bg-white shadow-soft hover:shadow-soft-lg
+      className="animate-count-up rounded-2xl bg-white/70 shadow-soft hover:shadow-soft-lg
                  transition-shadow duration-500 px-8 py-10 text-center border border-warm-200"
     >
       {isLoading ? (

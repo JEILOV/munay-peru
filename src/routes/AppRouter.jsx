@@ -40,6 +40,7 @@ import VolunteersInboxPage from '../pages/admin/VolunteersInboxPage';
 import TeamManagerPage from '../pages/admin/TeamManagerPage';
 import TestimonialsManagerPage from '../pages/admin/TestimonialsManagerPage';
 import PartnershipsManagerPage from '../pages/admin/PartnershipsManagerPage'; // <-- NUEVA IMPORTACIÓN ADMIN
+import RecognitionsManagerPage from '../pages/admin/RecognitionsManagerPage'; // <-- NUEVA IMPORTACIÓN ADMIN
 
 export default function AppRouter() {
   return (
@@ -85,6 +86,9 @@ export default function AppRouter() {
 
             {/* Gestión de alianzas */}
             <Route path="/admin/alianzas" element={<PartnershipsManagerPage />} /> {/* <-- NUEVA RUTA ADMIN */}
+
+            {/* Reconocimientos y Noticias */}
+            <Route path="/admin/reconocimientos" element={<RecognitionsManagerPage />} /> {/* <-- NUEVA RUTA ADMIN */}
 
             {/* Gestión de sedes */}
             <Route path="/admin/sedes" element={<HeadquartersManagerPage />} />
