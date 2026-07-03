@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import clsx from 'clsx';
 import Button from '../ui/Button';
+import DonationModal from '../ui/DonationModal';
 import { useScrollPosition } from '../../hooks/useScrollPosition';
 import logoMunay from '../../assets/logo-munay.png'; // Asegúrate de que el nombre coincida con tu archivo
 
@@ -18,10 +19,12 @@ const NAV_LINKS = [
   { to: '/eventos', label: 'Eventos' },
   { to: '/proyectos', label: 'Proyectos' },
   { to: '/sedes', label: 'Sedes' },
+  { label: 'Donar', action: 'donation-modal' }, // sin ruta: abre el modal compartido
 ];
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const isScrolled = useScrollPosition();
 
   return (
@@ -49,29 +52,49 @@ export default function Navbar() {
 
           {/* Links — desktop */}
           <ul className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <li key={link.to}>
-                <NavLink
-                  to={link.to}
-                  end={link.end}
-                  className={({ isActive }) =>
-                    clsx(
+            {NAV_LINKS.map((link) =>
+              link.action === 'donation-modal' ? (
+                <li key={link.label}>
+                  <button
+                    type="button"
+                    onClick={() => setIsDonationModalOpen(true)}
+                    className={clsx(
                       'relative px-4 py-2 text-sm font-medium text-warm-100 transition-colors duration-200',
                       'hover:text-warm-50',
-                      // Signature underline: nace desde el centro, vía scaleX
                       'after:content-[""] after:absolute after:left-1/2 after:bottom-0',
                       'after:h-[2px] after:bg-accent-400 after:rounded-full',
                       'after:w-[calc(100%-2rem)] after:-translate-x-1/2',
                       'after:scale-x-0 after:transition-transform after:duration-300 after:origin-center',
                       'hover:after:scale-x-100',
-                      isActive && 'text-warm-50 after:scale-x-100',
-                    )
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              </li>
-            ))}
+                    )}
+                  >
+                    {link.label}
+                  </button>
+                </li>
+              ) : (
+                <li key={link.to}>
+                  <NavLink
+                    to={link.to}
+                    end={link.end}
+                    className={({ isActive }) =>
+                      clsx(
+                        'relative px-4 py-2 text-sm font-medium text-warm-100 transition-colors duration-200',
+                        'hover:text-warm-50',
+                        // Signature underline: nace desde el centro, vía scaleX
+                        'after:content-[""] after:absolute after:left-1/2 after:bottom-0',
+                        'after:h-[2px] after:bg-accent-400 after:rounded-full',
+                        'after:w-[calc(100%-2rem)] after:-translate-x-1/2',
+                        'after:scale-x-0 after:transition-transform after:duration-300 after:origin-center',
+                        'hover:after:scale-x-100',
+                        isActive && 'text-warm-50 after:scale-x-100',
+                      )
+                    }
+                  >
+                    {link.label}
+                  </NavLink>
+                </li>
+              )
+            )}
           </ul>
 
           {/* CTA + Hamburguesa */}
@@ -103,25 +126,40 @@ export default function Navbar() {
         )}
       >
         <ul className="px-4 pb-4 pt-1 space-y-1 bg-primary-700 border-t border-primary-600">
-          {NAV_LINKS.map((link) => (
-            <li key={link.to}>
-              <NavLink
-                to={link.to}
-                end={link.end}
-                onClick={() => setIsMenuOpen(false)}
-                className={({ isActive }) =>
-                  clsx(
-                    'block rounded-xl px-4 py-3 text-base font-medium transition-colors',
-                    isActive
-                      ? 'bg-primary-800 text-warm-50'
-                      : 'text-warm-100 hover:bg-primary-600 hover:text-warm-50',
-                  )
-                }
-              >
-                {link.label}
-              </NavLink>
-            </li>
-          ))}
+          {NAV_LINKS.map((link) =>
+            link.action === 'donation-modal' ? (
+              <li key={link.label}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setIsDonationModalOpen(true);
+                  }}
+                  className="block w-full text-left rounded-xl px-4 py-3 text-base font-medium text-warm-100 hover:bg-primary-600 hover:text-warm-50 transition-colors"
+                >
+                  {link.label}
+                </button>
+              </li>
+            ) : (
+              <li key={link.to}>
+                <NavLink
+                  to={link.to}
+                  end={link.end}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={({ isActive }) =>
+                    clsx(
+                      'block rounded-xl px-4 py-3 text-base font-medium transition-colors',
+                      isActive
+                        ? 'bg-primary-800 text-warm-50'
+                        : 'text-warm-100 hover:bg-primary-600 hover:text-warm-50',
+                    )
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            )
+          )}
           <li className="pt-2 sm:hidden">
             <Link to="/alianzas" onClick={() => setIsMenuOpen(false)}>
               <Button variant="accent" size="md" fullWidth>
@@ -131,6 +169,11 @@ export default function Navbar() {
           </li>
         </ul>
       </div>
+
+      <DonationModal
+        isOpen={isDonationModalOpen}
+        onClose={() => setIsDonationModalOpen(false)}
+      />
     </header>
   );
 }
