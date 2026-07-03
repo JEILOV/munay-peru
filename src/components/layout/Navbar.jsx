@@ -18,7 +18,6 @@ const NAV_LINKS = [
   { to: '/eventos', label: 'Eventos' },
   { to: '/proyectos', label: 'Proyectos' },
   { to: '/sedes', label: 'Sedes' },
-  { to: '/alianzas', label: 'Alianzas' },
 ];
 
 export default function Navbar() {
@@ -77,9 +76,9 @@ export default function Navbar() {
 
           {/* CTA + Hamburguesa */}
           <div className="flex items-center gap-3">
-            <Link to="/voluntarios" className="hidden sm:block">
+            <Link to="/alianzas" className="hidden sm:block">
               <Button variant="accent" size="md">
-                Únete como Voluntario
+                Alianzas Estratégicas
               </Button>
             </Link>
 
@@ -124,9 +123,9 @@ export default function Navbar() {
             </li>
           ))}
           <li className="pt-2 sm:hidden">
-            <Link to="/voluntarios" onClick={() => setIsMenuOpen(false)}>
+            <Link to="/alianzas" onClick={() => setIsMenuOpen(false)}>
               <Button variant="accent" size="md" fullWidth>
-                Únete como Voluntario
+                Alianzas Estratégicas
               </Button>
             </Link>
           </li>
