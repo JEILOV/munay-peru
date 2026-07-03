@@ -7,6 +7,7 @@
 
 import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
+import logoMunay from '../../assets/logo-munay.png'; // Mismo asset que Navbar/Sidebar, para consistencia real de marca
 
 const SEDES = ['Piura', 'Cusco', 'Lima', 'Iquitos'];
 
@@ -15,8 +16,10 @@ const NAV_COLUMNS = [
     title: 'Organización',
     links: [
       { label: 'Nosotros', to: '/nosotros' },
+      { label: 'Eventos', to: '/eventos' },
       { label: 'Proyectos', to: '/proyectos' },
-      { label: 'Nuestras sedes', to: '/sedes' },
+      { label: 'Sedes', to: '/sedes' },
+      { label: 'Alianzas', to: '/alianzas' },
     ],
   },
   {
@@ -38,9 +41,13 @@ export default function Footer() {
 
           {/* Marca + misión breve */}
           <div className="lg:col-span-1">
-            <span className="font-display text-xl font-bold text-warm-50">
-              Munay <span className="text-accent-400">Perú</span>
-            </span>
+            <Link to="/" className="inline-block">
+              <img
+                src={logoMunay}
+                alt="Logo Munay Perú Organization"
+                className="h-14 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity duration-300"
+              />
+            </Link>
             <p className="mt-3 text-sm text-warm-300 leading-relaxed">
               Trabajamos junto a comunidades de todo el país para construir
               futuro desde la identidad y la cercanía.
