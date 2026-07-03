@@ -45,7 +45,7 @@ export default function Footer() {
               <img
                 src={logoMunay}
                 alt="Logo Munay Perú Organization"
-                className="h-14 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity duration-300"
+                className="h-35 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity duration-300"
               />
             </Link>
             <p className="mt-3 text-sm text-warm-300 leading-relaxed">
