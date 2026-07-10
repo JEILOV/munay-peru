@@ -81,12 +81,14 @@ export default function Reconocimientos() {
 }
 
 function RecognitionCard({ item }) {
+  const [expanded, setExpanded] = useState(false);
   const dateLabel = formatDate(item.date);
 
   return (
     <motion.article
       variants={cardVariants}
-      className="group bg-white rounded-2xl border border-warm-200 shadow-soft hover:shadow-soft-lg transition-shadow duration-300 overflow-hidden flex flex-col"
+      onClick={() => setExpanded((prev) => !prev)}
+      className="group bg-white rounded-2xl border border-warm-200 shadow-soft hover:shadow-soft-lg transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer select-none"
     >
       <div className="aspect-[4/3] overflow-hidden bg-warm-100">
         {item.imageUrl ? (
@@ -113,9 +115,18 @@ function RecognitionCard({ item }) {
           {item.title}
         </h3>
         {item.description && (
-          <p className="mt-2 text-sm text-warm-600 leading-relaxed line-clamp-3 flex-1">
-            {item.description}
-          </p>
+          <>
+            <p
+              className={`mt-2 text-sm text-warm-600 leading-relaxed flex-1 ${
+                expanded ? '' : 'line-clamp-3 group-hover:line-clamp-none'
+              }`}
+            >
+              {item.description}
+            </p>
+            <span className="mt-2 text-xs font-semibold text-accent-700 group-hover:underline">
+              {expanded ? 'Leer menos' : 'Leer más'}
+            </span>
+          </>
         )}
       </div>
     </motion.article>

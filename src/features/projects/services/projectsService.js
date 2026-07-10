@@ -24,7 +24,7 @@
 import {
   addDoc, updateDoc, deleteDoc, doc,
   collection, serverTimestamp,
-  query, where, orderBy, getDocs, Timestamp,
+  query, where, orderBy, getDocs, Timestamp, limit,
 } from 'firebase/firestore';
 import { getCollection, getDocument, getDocumentByField } from '../../../services/firebase/firestore';
 import { db } from '../../../services/firebase/config';
@@ -98,11 +98,32 @@ export async function fetchUpcomingEvents() {
 /**
  * Un proyecto o evento por su slug (usado en ProjectDetailPage).
  * Devuelve null si no existe O si no está publicado.
+ *
+ * IMPORTANTE: el filtro `status == 'published'` va DENTRO de la query
+ * (no se valida después, en el cliente). Las reglas de seguridad de
+ * Firestore para lectura pública están escritas contra `resource.data.status`,
+ * y para que un "list" query (que es lo que hace una búsqueda por slug)
+ * pase esa regla, el propio query debe incluir esa misma condición.
+ * Si solo se filtra por `slug` (como hacía la versión anterior, vía
+ * getDocumentByField), Firestore no puede garantizar que únicamente se
+ * devuelvan documentos publicados y responde con
+ * "Missing or insufficient permissions" aunque el documento sí exista
+ * y esté publicado — que era el bug que impedía ver el detalle de un
+ * proyecto en la web pública.
  */
 export async function fetchProjectBySlug(slug) {
-  const project = await getDocumentByField(COLLECTION, 'slug', slug);
-  if (!project || project.status !== 'published') return null;
-  return project;
+  const q = query(
+    collection(db, COLLECTION),
+    where('slug', '==', slug),
+    where('status', '==', 'published'),
+    limit(1),
+  );
+
+  const snap = await getDocs(q);
+  if (snap.empty) return null;
+
+  const docSnap = snap.docs[0];
+  return { id: docSnap.id, ...docSnap.data() };
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
