@@ -20,7 +20,7 @@ import { dirname, join } from 'path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const SITE_URL = 'https://munay-peru.vercel.app';
+const SITE_URL = 'https://www.munayperu.org.pe';
 
 // ── Config de Firebase (mismas env vars que usa el cliente) ────────────────
 const firebaseConfig = {
@@ -49,6 +49,7 @@ if (missing.length > 0) {
 const STATIC_ROUTES = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },
   { path: '/proyectos', priority: '0.8', changefreq: 'weekly' },
+  { path: '/eventos', priority: '0.7', changefreq: 'weekly' },
   { path: '/sedes', priority: '0.8', changefreq: 'monthly' },
   { path: '/voluntarios', priority: '0.8', changefreq: 'monthly' },
   { path: '/nosotros', priority: '0.6', changefreq: 'monthly' },

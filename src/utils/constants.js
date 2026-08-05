@@ -6,6 +6,11 @@
 // cualquier componente que importe SEDES desde aquí pasa a recibirlo
 // como prop en su lugar — el cambio queda aislado a ese punto.
 
+// Flag temporal: desactiva el botón/link de "Donar" en Navbar, Footer y
+// el botón flotante mientras se corrige el nombre asociado al Yape.
+// Para reactivar el flujo de donación, volver a poner esto en `true`.
+export const DONATIONS_ENABLED = false;
+
 export const SEDES = [
   { id: 'piura', name: 'Piura' },
   { id: 'cusco', name: 'Cusco' },

@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import Button from '../ui/Button';
 import DonationModal from '../ui/DonationModal';
 import { useScrollPosition } from '../../hooks/useScrollPosition';
+import { DONATIONS_ENABLED } from '../../utils/constants';
 import logoMunay from '../../assets/logo-munay.png'; // Asegúrate de que el nombre coincida con tu archivo
 
 const NAV_LINKS = [
@@ -19,7 +20,8 @@ const NAV_LINKS = [
   { to: '/eventos', label: 'Eventos' },
   { to: '/proyectos', label: 'Proyectos' },
   { to: '/sedes', label: 'Sedes' },
-  { label: 'Donar', action: 'donation-modal' }, // sin ruta: abre el modal compartido
+  // Desactivado temporalmente vía DONATIONS_ENABLED (corrección del Yape)
+  ...(DONATIONS_ENABLED ? [{ label: 'Donar', action: 'donation-modal' }] : []),
 ];
 
 export default function Navbar() {
@@ -170,10 +172,12 @@ export default function Navbar() {
         </ul>
       </div>
 
-      <DonationModal
-        isOpen={isDonationModalOpen}
-        onClose={() => setIsDonationModalOpen(false)}
-      />
+      {DONATIONS_ENABLED && (
+        <DonationModal
+          isOpen={isDonationModalOpen}
+          onClose={() => setIsDonationModalOpen(false)}
+        />
+      )}
     </header>
   );
 }

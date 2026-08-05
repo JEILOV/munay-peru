@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
 import DonationModal from '../ui/DonationModal';
+import { DONATIONS_ENABLED } from '../../utils/constants';
 import logoMunay from '../../assets/logo-munay.png'; // Mismo asset que Navbar/Sidebar, para consistencia real de marca
 
 const SEDES = ['Piura', 'Cusco', 'Lima', 'Iquitos'];
@@ -30,7 +31,8 @@ const NAV_COLUMNS = [
     title: 'Participa',
     links: [
       { label: 'Ser voluntario', to: '/voluntarios' },
-      { label: 'Donar', action: 'donation-modal' }, // sin ruta: abre el modal
+      // Desactivado temporalmente vía DONATIONS_ENABLED (corrección del Yape)
+      ...(DONATIONS_ENABLED ? [{ label: 'Donar', action: 'donation-modal' }] : []),
     ],
   },
 ];
@@ -118,10 +120,12 @@ export default function Footer() {
         </div>
       </div>
 
-      <DonationModal
-        isOpen={isDonationModalOpen}
-        onClose={() => setIsDonationModalOpen(false)}
-      />
+      {DONATIONS_ENABLED && (
+        <DonationModal
+          isOpen={isDonationModalOpen}
+          onClose={() => setIsDonationModalOpen(false)}
+        />
+      )}
     </footer>
   );
 }

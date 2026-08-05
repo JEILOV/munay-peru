@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/
 
-Sitemap: https://munay-peru.vercel.app/sitemap.xml
+Sitemap: https://www.munayperu.org.pe/sitemap.xml
