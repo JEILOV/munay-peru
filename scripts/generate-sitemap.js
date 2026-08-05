@@ -13,7 +13,7 @@
 // CUALQUIER proceso de build, no solo al bundle de Vite.
 
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
 import { writeFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -73,8 +73,15 @@ async function generateSitemap() {
   const entries = STATIC_ROUTES.map((r) => urlEntry(r.path, r.priority, r.changefreq));
 
   // ── Proyectos: usan el campo 'slug', NO el doc.id ────────────────────────
-  console.log('[sitemap] Leyendo colección "projects"...');
-  const projectsSnap = await getDocs(collection(db, 'projects'));
+  // IMPORTANTE: se filtra por status == 'published' porque la security rule
+  // de 'projects' es "allow read: if resource.data.status == 'published'".
+  // Una query de la colección completa SIN este where() es rechazada por
+  // Firestore con permission-denied (no puede garantizar de antemano que
+  // solo devolverá docs publicados), aunque cada doc individual sí cumpla
+  // la regla. Mismo filtro que ya aplica projectsService.js en el cliente.
+  console.log('[sitemap] Leyendo colección "projects" (solo publicados)...');
+  const projectsQuery = query(collection(db, 'projects'), where('status', '==', 'published'));
+  const projectsSnap = await getDocs(projectsQuery);
   let projectCount = 0;
   projectsSnap.forEach((doc) => {
     const data = doc.data();
