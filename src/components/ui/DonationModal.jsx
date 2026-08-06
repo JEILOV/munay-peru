@@ -11,6 +11,7 @@
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { YAPE_DONATIONS_ENABLED } from '../../utils/constants';
 
 const WHATSAPP_PHONE = '51939389478';
 
@@ -103,22 +104,27 @@ export default function DonationModal({ isOpen, onClose }) {
             </p>
 
             {/* Tabs */}
-            <div className="mt-6 flex rounded-xl border border-warm-200 bg-warm-50 p-1">
-              <TabButton
-                label="Bienes / Servicios"
-                isActive={activeTab === TABS.GOODS}
-                onClick={() => setActiveTab(TABS.GOODS)}
-              />
-              <TabButton
-                label="Yape"
-                isActive={activeTab === TABS.YAPE}
-                onClick={() => setActiveTab(TABS.YAPE)}
-              />
-            </div>
+            {/* La pestaña "Yape" se oculta mientras YAPE_DONATIONS_ENABLED
+                sea false; como solo queda una opción, no tiene sentido
+                mostrar el selector de pestañas en absoluto. */}
+            {YAPE_DONATIONS_ENABLED && (
+              <div className="mt-6 flex rounded-xl border border-warm-200 bg-warm-50 p-1">
+                <TabButton
+                  label="Bienes / Servicios"
+                  isActive={activeTab === TABS.GOODS}
+                  onClick={() => setActiveTab(TABS.GOODS)}
+                />
+                <TabButton
+                  label="Yape"
+                  isActive={activeTab === TABS.YAPE}
+                  onClick={() => setActiveTab(TABS.YAPE)}
+                />
+              </div>
+            )}
 
             {/* Contenido de cada pestaña */}
             <div className="mt-6">
-              {activeTab === TABS.GOODS ? (
+              {activeTab === TABS.GOODS || !YAPE_DONATIONS_ENABLED ? (
                 <div>
                   <p className="text-sm text-warm-600">
                     Cuéntanos qué puedes donar y coordinamos por WhatsApp.
