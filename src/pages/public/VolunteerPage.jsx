@@ -4,6 +4,12 @@ import Section from '../../components/layout/Section';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 
 const SEDES_OPTIONS = ['Piura', 'Cusco', 'Lima', 'Iquitos'];
+const AREA_OPTIONS = [
+  'Comunicaciones y Marketing',
+  'Gestión de Talento Humano',
+  'Relaciones Institucionales',
+  'Gestión de Proyectos y Eventos',
+];
 const GENDER_OPTIONS = ['Femenino', 'Masculino', 'Prefiero no decir'];
 const EXPERIENCE_OPTIONS = ['Sí', 'No'];
 const AVAILABILITY_OPTIONS = ['Tiempo completo', 'Medio tiempo', 'Fines de semana', 'Eventual / por proyecto'];
@@ -15,6 +21,7 @@ const INITIAL_FORM = {
   birthdate: '',
   gender: '',
   sede: '',
+  area: '',
   location: '',
   phone: '',
   email: '',
@@ -177,7 +184,11 @@ const VolunteerPage = () => {
                   label="Sede a la que postulas" name="sede"
                   value={form.sede} onChange={handleChange}
                   options={SEDES_OPTIONS} required
-                  className="sm:col-span-2"
+                />
+                <SelectField
+                  label="Área a la que postulas" name="area"
+                  value={form.area} onChange={handleChange}
+                  options={AREA_OPTIONS} required
                 />
               </div>
             </FormCard>
@@ -218,7 +229,7 @@ const VolunteerPage = () => {
                   value={form.motivation}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-xl border border-warm-200 bg-warm-50 px-4 py-2.5 text-sm text-primary-900 placeholder-warm-400 focus:outline-none focus:ring-2 focus:ring-accent-500/30 focus:border-accent-500 transition resize-none"
+                  className="w-full resize-none rounded-xl border border-warm-200 bg-warm-50 px-4 py-2.5 text-sm text-primary-900 placeholder-warm-400 focus:outline-none focus:ring-2 focus:ring-accent-500/30 focus:border-accent-500 transition"
                 />
               </div>
             </FormCard>

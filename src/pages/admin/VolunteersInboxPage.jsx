@@ -142,7 +142,7 @@ export default function VolunteersInboxPage() {
           items={volunteers}
           loading={loading}
           error={error}
-          searchFields={['name', 'email', 'phone', 'sede', 'profession']}
+          searchFields={['name', 'email', 'phone', 'sede', 'area', 'profession']}
           statusMap={VOL_STATUS_MAP}
           pendingKey="pending"
           emptyText="No hay postulaciones registradas aún."
@@ -227,6 +227,7 @@ function VolunteerCard({ data, actions }) {
             <MetaChip label="F. Nacimiento"  value={data.birthdate          ?? '—'} />
             <MetaChip label="Género"         value={data.gender             ?? '—'} />
             <MetaChip label="Sede"           value={data.sede               ?? '—'} />
+            <MetaChip label="Área"           value={data.area               ?? '—'} />
             <MetaChip label="Residencia"     value={data.location           ?? '—'} />
           </div>
         </div>
