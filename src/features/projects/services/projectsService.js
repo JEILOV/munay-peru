@@ -10,7 +10,11 @@
 // Los documentos ahora pueden tener:
 //   type: 'initiative' | 'event'    (ausente = se trata como 'initiative')
 //   eventDate: Timestamp de Firestore (solo para type === 'event')
-//   registrationOpen: boolean       (solo para type === 'event')
+//
+// EXTENSIÓN Inscripciones por proyecto/evento (aplica a AMBOS tipos):
+//   registrationOpen: boolean          switch "Inscripciones abiertas"
+//   registrationFormUrl: string        URL externa (Google Forms, etc.); '' = sin enlace
+// Cada proyecto/evento tiene su propia convocatoria; ya no hay formulario global.
 //
 // DECISIÓN sobre índices compuestos:
 // Las queries de eventos (type == 'event' + eventDate >= hoy + orderBy eventDate)
@@ -28,6 +32,7 @@ import {
 } from 'firebase/firestore';
 import { getCollection, getDocument, getDocumentByField } from '../../../services/firebase/firestore';
 import { db } from '../../../services/firebase/config';
+import { isValidHttpUrl } from '../../../utils/url';
 
 const COLLECTION = 'projects';
 
@@ -168,7 +173,10 @@ export async function fetchProjectById(id) {
  * Para eventos, `data` debe incluir:
  *   type: 'event'
  *   eventDate: string ISO (ej. "2025-07-20") — se convierte a Timestamp aquí
+ *
+ * Para cualquier tipo (opcional):
  *   registrationOpen: boolean
+ *   registrationFormUrl: string (http/https; se valida aquí)
  *
  * Para iniciativas:
  *   type: 'initiative' (o ausente)
@@ -208,13 +216,36 @@ export async function deleteProject(id) {
 ══════════════════════════════════════════════════════════════════════════════ */
 
 /**
+ * Normaliza los campos de inscripción (válidos para iniciativas Y eventos).
+ * - registrationOpen siempre booleano.
+ * - registrationFormUrl: se recorta y se valida (solo http/https). Se conserva
+ *   aunque las inscripciones estén cerradas, para poder reabrirlas sin volver a
+ *   pegar el enlace; la web pública solo lo usa si registrationOpen es true.
+ * Lanza Error si la URL no es válida (el formulario admin muestra el mensaje).
+ */
+function normalizeRegistrationFields(data) {
+  const url = typeof data.registrationFormUrl === 'string'
+    ? data.registrationFormUrl.trim()
+    : '';
+
+  if (url && !isValidHttpUrl(url)) {
+    throw new Error('El enlace de inscripción debe empezar con http:// o https://');
+  }
+
+  return {
+    registrationOpen:    Boolean(data.registrationOpen),
+    registrationFormUrl: url,
+  };
+}
+
+/**
  * Convierte el campo eventDate de string ISO a Timestamp de Firestore,
- * y limpia los campos de evento si el tipo es 'initiative'.
- * Así el servicio siempre guarda tipos correctos sin importar lo que
- * venga del formulario.
+ * limpia los campos de fecha si el tipo es 'initiative', y normaliza las
+ * inscripciones. Así el servicio siempre guarda tipos correctos sin importar
+ * lo que venga del formulario.
  */
 function normalizeEventFields(data) {
-  const normalized = { ...data };
+  const normalized = { ...data, ...normalizeRegistrationFields(data) };
 
   if (normalized.type === 'event') {
     // El formulario entrega eventDate como string "YYYY-MM-DD"
@@ -222,13 +253,10 @@ function normalizeEventFields(data) {
     if (normalized.eventDate && typeof normalized.eventDate === 'string') {
       normalized.eventDate = Timestamp.fromDate(new Date(normalized.eventDate));
     }
-    // Asegurar booleano
-    normalized.registrationOpen = Boolean(normalized.registrationOpen);
   } else {
-    // Iniciativa: limpiar campos de evento para no dejar basura
-    normalized.type             = 'initiative';
-    normalized.eventDate        = null;
-    normalized.registrationOpen = null;
+    // Iniciativa: sin fecha de evento (las inscripciones sí se conservan)
+    normalized.type      = 'initiative';
+    normalized.eventDate = null;
   }
 
   return normalized;

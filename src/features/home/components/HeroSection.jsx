@@ -1,8 +1,12 @@
 // src/features/home/components/HeroSection.jsx
 import { Link } from 'react-router-dom';
 import heroBg from '../../../assets/hero.jpg';
+import { useVolunteerFormUrl } from '../../../hooks/useVolunteerFormUrl';
 
 export default function HeroSection() {
+  // url === '' (sin configurar, cargando o error) -> el botón no se renderiza
+  const { url: volunteerUrl } = useVolunteerFormUrl();
+
   return (
     <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden py-24 sm:py-32">
       
@@ -43,15 +47,25 @@ export default function HeroSection() {
 
         {/* Botones de acción */}
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <Link
-            to="/voluntarios"
-            className="w-full sm:w-auto rounded-full bg-accent-500 px-8 py-3.5 text-base font-semibold text-primary-900 shadow-sm hover:bg-accent-400 transition-colors duration-200"
-          >
-            Únete al cambio
-          </Link>
+          {volunteerUrl && (
+            <a
+              href={volunteerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto rounded-full bg-accent-500 px-8 py-3.5 text-base font-semibold text-primary-900 shadow-sm hover:bg-accent-400 transition-colors duration-200"
+            >
+              Postula como voluntario
+            </a>
+          )}
+          {/* Sin formulario general, este pasa a ser el botón principal:
+              cada proyecto/evento tiene su propia convocatoria. */}
           <Link
             to="/proyectos"
-            className="w-full sm:w-auto rounded-full border border-warm-50/30 bg-transparent px-8 py-3.5 text-base font-semibold text-warm-50 hover:bg-warm-50/10 transition-colors duration-200 backdrop-blur-sm"
+            className={
+              volunteerUrl
+                ? 'w-full sm:w-auto rounded-full border border-warm-50/30 bg-transparent px-8 py-3.5 text-base font-semibold text-warm-50 hover:bg-warm-50/10 transition-colors duration-200 backdrop-blur-sm'
+                : 'w-full sm:w-auto rounded-full bg-accent-500 px-8 py-3.5 text-base font-semibold text-primary-900 shadow-sm hover:bg-accent-400 transition-colors duration-200'
+            }
           >
             Conoce nuestros proyectos
           </Link>

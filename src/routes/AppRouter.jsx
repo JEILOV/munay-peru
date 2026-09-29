@@ -23,7 +23,7 @@ import ProjectsPage from '../pages/public/ProjectsPage';
 import ProjectDetailPage from '../pages/public/ProjectDetailPage';
 import HeadquartersPage from '../pages/public/HeadquartersPage';
 import HeadquartersDetailPage from '../pages/public/HeadquartersDetailPage';
-import VolunteerPage from '../pages/public/VolunteerPage';
+import VolunteerRedirectPage from '../pages/public/VolunteerRedirectPage.jsx';
 import AboutPage from '../pages/public/AboutPage';
 import ContactPage from '../pages/public/ContactPage';
 import PartnershipsPage from '../pages/public/PartnershipsPage'; // <-- NUEVA IMPORTACIÓN PÚBLICA
@@ -41,6 +41,7 @@ import TeamManagerPage from '../pages/admin/TeamManagerPage';
 import TestimonialsManagerPage from '../pages/admin/TestimonialsManagerPage';
 import PartnershipsManagerPage from '../pages/admin/PartnershipsManagerPage'; // <-- NUEVA IMPORTACIÓN ADMIN
 import RecognitionsManagerPage from '../pages/admin/RecognitionsManagerPage'; // <-- NUEVA IMPORTACIÓN ADMIN
+import SettingsManagerPage from '../pages/admin/SettingsManagerPage';
 
 export default function AppRouter() {
   return (
@@ -54,7 +55,7 @@ export default function AppRouter() {
           <Route path="/proyectos/:slug" element={<ProjectDetailPage />} />
           <Route path="/sedes" element={<HeadquartersPage />} />
           <Route path="/sedes/:id" element={<HeadquartersDetailPage />} />
-          <Route path="/voluntarios" element={<VolunteerPage />} />
+          <Route path="/voluntarios" element={<VolunteerRedirectPage />} />
           <Route path="/nosotros" element={<AboutPage />} />
           <Route path="/contacto" element={<ContactPage />} />
           <Route path="/alianzas" element={<PartnershipsPage />} /> {/* <-- NUEVA RUTA PÚBLICA */}
@@ -95,6 +96,9 @@ export default function AppRouter() {
 
             {/* Bandeja de entrada */}
             <Route path="/admin/voluntarios" element={<VolunteersInboxPage />} />
+
+            {/* Configuración global */}
+            <Route path="/admin/configuracion" element={<SettingsManagerPage />} />
           </Route>
         </Route>
 

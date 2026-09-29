@@ -2,6 +2,7 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
 import Button from '../../components/ui/Button';
 import LoadingScreen from '../../components/feedback/LoadingScreen';
+import RegistrationButton from '../../features/projects/utils/RegistrationButton';
 import { useProjectBySlug } from '../../hooks/useProjects';
 import { SEDES } from '../../utils/constants';
 
@@ -95,6 +96,10 @@ const ProjectDetailPage = () => {
             {project.description}
           </p>
         )}
+
+        {/* Inscripción: solo si está abierta y tiene formulario; los eventos
+            sin inscripción disponible muestran "Inscripciones cerradas". */}
+        <RegistrationButton project={project} className="mt-6" />
       </header>
 
       {/* ── Contenido largo ───────────────────────────────────────────────── */}

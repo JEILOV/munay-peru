@@ -6,6 +6,8 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Section from '../../components/layout/Section';
 import { fetchUpcomingEvents } from '../../features/projects/services/projectsService';
+import RegistrationButton from '../../features/projects/utils/RegistrationButton';
+import { getRegistration } from '../../features/projects/registration';
 
 /* ── Helper: Timestamp de Firestore → fecha legible en español ──────────── */
 
@@ -182,64 +184,58 @@ export default function EventsPage() {
 
 function EventCard({ event }) {
   const dateLabel = formatEventDate(event.eventDate);
+  const isOpen    = getRegistration(event).status === 'open';
 
+  // Card con "stretched link": el <Link> del título cubre toda la tarjeta
+  // (after:absolute after:inset-0) y el botón de inscripción, con relative
+  // z-10, queda por encima. Así no se anidan <a> dentro de <a>.
   return (
-    <Link to={`/proyectos/${event.slug}`} className="block group">
-      <Card>
-        {/* Imagen con badge de inscripciones abiertas */}
-        <Card.Header
-          src={event.coverImage}
-          alt={event.title}
-          badge={event.registrationOpen ? '✦ Inscripciones abiertas' : undefined}
-        />
+    <Card>
+      {/* Imagen con badge de inscripciones abiertas */}
+      <Card.Header
+        src={event.coverImage}
+        alt={event.title}
+        badge={isOpen ? '✦ Inscripciones abiertas' : undefined}
+      />
 
-        <Card.Body>
-          {/* Fecha — es el dato más importante, va primero y destacado */}
-          {dateLabel && (
-            <div className="flex items-center gap-1.5 mb-2">
-              <CalendarIcon className="h-3.5 w-3.5 text-accent-600 flex-shrink-0" />
-              <span className="text-xs font-semibold text-accent-700 uppercase tracking-wide">
-                {dateLabel}
-              </span>
-            </div>
-          )}
-
-          <Card.Title className="line-clamp-2">{event.title}</Card.Title>
-
-          {event.description && (
-            <Card.Description className="line-clamp-3">
-              {event.description}
-            </Card.Description>
-          )}
-
-          {/* CTA inline */}
-          <div className="mt-4 flex items-center justify-between">
-            <span className="text-xs font-semibold text-primary-700 group-hover:text-primary-900 transition-colors flex items-center gap-1">
-              Ver más
-              <ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+      <Card.Body>
+        {/* Fecha — es el dato más importante, va primero y destacado */}
+        {dateLabel && (
+          <div className="flex items-center gap-1.5 mb-2">
+            <CalendarIcon className="h-3.5 w-3.5 text-accent-600 flex-shrink-0" />
+            <span className="text-xs font-semibold text-accent-700 uppercase tracking-wide">
+              {dateLabel}
             </span>
-
-            {event.registrationOpen && (
-              <span className="inline-flex items-center gap-1 bg-accent-500/15 text-accent-700 text-xs font-semibold px-2.5 py-1 rounded-full">
-                <PulsingDot />
-                Abiertas
-              </span>
-            )}
           </div>
-        </Card.Body>
-      </Card>
-    </Link>
-  );
-}
+        )}
 
-/* ── Micro-componentes ────────────────────────────────────────────────────── */
+        <Card.Title className="line-clamp-2">
+          <Link
+            to={`/proyectos/${event.slug}`}
+            className="after:absolute after:inset-0 after:content-['']"
+          >
+            {event.title}
+          </Link>
+        </Card.Title>
 
-function PulsingDot() {
-  return (
-    <span className="relative flex h-2 w-2">
-      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-500 opacity-75" />
-      <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-600" />
-    </span>
+        {event.description && (
+          <Card.Description className="line-clamp-3">
+            {event.description}
+          </Card.Description>
+        )}
+
+        {/* CTA inline */}
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <span className="text-xs font-semibold text-primary-700 group-hover:text-primary-900 transition-colors flex items-center gap-1">
+            Ver más
+            <ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </span>
+
+          {/* Solo se dibuja si hay inscripción abierta con formulario */}
+          <RegistrationButton project={event} size="sm" showClosed={false} />
+        </div>
+      </Card.Body>
+    </Card>
   );
 }
 

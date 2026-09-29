@@ -16,6 +16,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Button from '../../components/ui/Button';
 import { PROJECT_CATEGORIES } from '../../utils/constants';
+import { isValidHttpUrl } from '../../utils/url';
 import { compressAndUploadImage } from '../../services/imgbb/imgbbService';
 import {
   fetchProjectById,
@@ -34,10 +35,12 @@ const EMPTY_FORM = {
   category:         '',
   videoUrl:         '',
   status:           'published',
-  // Campos de evento (solo se guardan cuando type === 'event')
+  // Campos de evento (la fecha solo aplica cuando type === 'event')
   type:             'initiative',
   eventDate:        '',        // string "YYYY-MM-DD" en el formulario
-  registrationOpen: false,
+  // Inscripciones: aplican a iniciativas Y eventos (convocatoria propia)
+  registrationOpen:    false,
+  registrationFormUrl: '',     // Google Forms u otra plataforma externa
 };
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -78,6 +81,8 @@ export default function ProjectEditorPage() {
             ...rest,
             type:      rest.type ?? 'initiative',
             eventDate: timestampToDateString(eventDate),
+            registrationOpen:    Boolean(rest.registrationOpen),
+            registrationFormUrl: rest.registrationFormUrl ?? '',
           });
           setImagePreview(coverImage ?? '');
         }
@@ -100,9 +105,9 @@ export default function ProjectEditorPage() {
     setForm((prev) => ({
       ...prev,
       type:             newType,
-      // Limpiar campos de evento al volver a iniciativa
+      // Limpiar la fecha al volver a iniciativa. Las inscripciones se conservan:
+      // aplican a ambos tipos.
       eventDate:        newType === 'initiative' ? '' : prev.eventDate,
-      registrationOpen: newType === 'initiative' ? false : prev.registrationOpen,
     }));
   }
 
@@ -138,6 +143,13 @@ export default function ProjectEditorPage() {
       return;
     }
 
+    // Validación del enlace de inscripción (el servicio vuelve a validar)
+    const formUrl = form.registrationFormUrl.trim();
+    if (formUrl && !isValidHttpUrl(formUrl)) {
+      setError('El enlace de inscripción debe empezar con http:// o https://');
+      return;
+    }
+
     let coverImage = imagePreview; // URL existente o vacío
 
     try {
@@ -151,7 +163,7 @@ export default function ProjectEditorPage() {
 
       // Paso 2: Guardar en Firestore
       setSavingStage('saving');
-      const payload = { ...form, coverImage };
+      const payload = { ...form, registrationFormUrl: formUrl, coverImage };
 
       if (isEditMode) {
         await updateProject(id, payload);
@@ -242,23 +254,49 @@ export default function ProjectEditorPage() {
                   hacer nada.
                 </p>
               </Field>
-
-              {/* Toggle: inscripciones abiertas */}
-              <div className="flex items-center justify-between rounded-xl bg-warm-50 border border-warm-200 px-4 py-3">
-                <div>
-                  <p className="text-sm font-medium text-primary-900">
-                    Inscripciones abiertas
-                  </p>
-                  <p className="text-xs text-warm-600 mt-0.5">
-                    Si está activo, la web pública mostrará el botón de inscripción.
-                  </p>
-                </div>
-                <ToggleSwitch
-                  checked={Boolean(form.registrationOpen)}
-                  onChange={(value) => handleChange('registrationOpen', value)}
-                />
-              </div>
             </div>
+          )}
+        </FormCard>
+
+        {/* ── Tarjeta de inscripciones (iniciativas y eventos) ─────────── */}
+        <FormCard title="Inscripciones">
+          <div className="flex items-center justify-between rounded-xl bg-warm-50 border border-warm-200 px-4 py-3">
+            <div>
+              <p className="text-sm font-medium text-primary-900">
+                Inscripciones abiertas
+              </p>
+              <p className="text-xs text-warm-600 mt-0.5">
+                Si está activo, la web pública mostrará el botón de inscripción.
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={Boolean(form.registrationOpen)}
+              onChange={(value) => handleChange('registrationOpen', value)}
+            />
+          </div>
+
+          {form.registrationOpen ? (
+            <div className="mt-5">
+              <Field label="URL del formulario de inscripción (Google Forms, etc.)">
+                <input
+                  type="url"
+                  inputMode="url"
+                  value={form.registrationFormUrl}
+                  onChange={(e) => handleChange('registrationFormUrl', e.target.value)}
+                  placeholder="https://forms.gle/…"
+                  className="input-base"
+                />
+              </Field>
+              {!form.registrationFormUrl.trim() && (
+                <p className="mt-1.5 text-xs text-amber-700">
+                  Sin enlace, el botón de inscripción no se mostrará en la web.
+                </p>
+              )}
+            </div>
+          ) : (
+            <p className="mt-3 text-xs text-warm-500">
+              Activa «Inscripciones abiertas» para ingresar el enlace del formulario.
+            </p>
           )}
         </FormCard>
 

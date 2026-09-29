@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
 import DonationModal from '../ui/DonationModal';
+import { useVolunteerFormUrl } from '../../hooks/useVolunteerFormUrl';
 import { DONATIONS_ENABLED } from '../../utils/constants';
 import logoMunay from '../../assets/logo-munay.png'; // Mismo asset que Navbar/Sidebar, para consistencia real de marca
 
@@ -30,7 +31,9 @@ const NAV_COLUMNS = [
   {
     title: 'Participa',
     links: [
-      { label: 'Ser voluntario', to: '/voluntarios' },
+      // Con formulario general opcional (/admin/configuracion) abre ese enlace;
+      // si no, lleva a /proyectos para elegir una iniciativa con su propia inscripción
+      { label: 'Ser voluntario', action: 'volunteer-form' },
       // Desactivado temporalmente vía DONATIONS_ENABLED (corrección del Yape)
       ...(DONATIONS_ENABLED ? [{ label: 'Donar', action: 'donation-modal' }] : []),
     ],
@@ -40,6 +43,7 @@ const NAV_COLUMNS = [
 export default function Footer() {
   const year = new Date().getFullYear();
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
+  const { url: volunteerUrl } = useVolunteerFormUrl();
 
   return (
     <footer className="bg-primary-900 text-warm-200">
@@ -70,7 +74,25 @@ export default function Footer() {
               <ul className="mt-4 space-y-2.5">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    {link.action === 'donation-modal' ? (
+                    {link.action === 'volunteer-form' ? (
+                      volunteerUrl ? (
+                        <a
+                          href={volunteerUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-warm-300 hover:text-accent-400 transition-colors duration-200"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link
+                          to="/proyectos"
+                          className="text-sm text-warm-300 hover:text-accent-400 transition-colors duration-200"
+                        >
+                          {link.label}
+                        </Link>
+                      )
+                    ) : link.action === 'donation-modal' ? (
                       <button
                         type="button"
                         onClick={() => setIsDonationModalOpen(true)}
