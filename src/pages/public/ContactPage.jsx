@@ -73,8 +73,8 @@ const ContactPage = () => {
               <ContactInfo
                 icon={<PhoneIcon />}
                 label="Teléfono (WhatsApp)"
-                value="+51 939 389 478"
-                href="https://wa.me/51939389478"
+                value="+51 974 297 301"
+                href="https://wa.me/51974297301"
               />
               <ContactInfo
                 icon={<LocationIcon />}
